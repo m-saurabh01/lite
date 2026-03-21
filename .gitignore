@@ -1,0 +1,27 @@
+# Build output
+target/
+build/
+dist/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime data (never commit)
+data/
+logs/
+backups/
+uploads/
+
+# Maven
+dependency-reduced-pom.xml

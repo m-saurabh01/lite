@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.aircraft.emms.ui.controller.FlbController"
+      stylesheets="@../css/styles.css">
+
+    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+    <!-- Header -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Flight Log Book" styleClass="section-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="createFlbBtn" text="+ New FLB Entry" onAction="#handleCreateFlb"
+                styleClass="btn-primary"/>
+        <Button text="Refresh" onAction="#handleRefresh" styleClass="btn-secondary"/>
+    </HBox>
+
+    <!-- FLB Table -->
+    <TableView fx:id="flbTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+        <columns>
+            <TableColumn text="ID" prefWidth="50">
+                <cellValueFactory><PropertyValueFactory property="id"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Sortie #" prefWidth="90">
+                <cellValueFactory><PropertyValueFactory property="sortieNumber"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Aircraft" prefWidth="100">
+                <cellValueFactory><PropertyValueFactory property="aircraftNumber"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Pilot" prefWidth="120">
+                <cellValueFactory><PropertyValueFactory property="pilotName"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Takeoff" prefWidth="80">
+                <cellValueFactory><PropertyValueFactory property="actualTakeoffTime"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Landing" prefWidth="80">
+                <cellValueFactory><PropertyValueFactory property="actualLandingTime"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Duration (min)" prefWidth="100">
+                <cellValueFactory><PropertyValueFactory property="durationMinutes"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Status" prefWidth="90">
+                <cellValueFactory><PropertyValueFactory property="status"/></cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button fx:id="editFlbBtn" text="Edit" onAction="#handleEditFlb" styleClass="btn-secondary" disable="true"/>
+        <Button fx:id="submitFlbBtn" text="Submit" onAction="#handleSubmitFlb" styleClass="btn-primary" disable="true"/>
+    </HBox>
+
+    <!-- FLB Form -->
+    <TitledPane fx:id="flbFormPane" text="FLB Entry" expanded="false" animated="true">
+        <VBox spacing="10">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <GridPane hgap="10" vgap="10">
+                <Label text="Link to Sortie:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <ComboBox fx:id="sortieCombo" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200"
+                          promptText="(Optional)"/>
+                <Label text="Aircraft Type:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <TextField fx:id="flbAircraftType" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label text="Aircraft Number:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                <TextField fx:id="flbAircraftNum" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                <Label text="Takeoff Time (HH:mm):" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <TextField fx:id="takeoffField" promptText="09:00" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label text="Landing Time (HH:mm):" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+                <TextField fx:id="landingField" promptText="11:00" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+                <Label text="Duration:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <Label fx:id="durationLabel" text="-- min" GridPane.columnIndex="1" GridPane.rowIndex="3"
+                       styleClass="computed-value"/>
+                <Label text="Remarks:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                <TextArea fx:id="flbRemarks" prefRowCount="2" GridPane.columnIndex="1" GridPane.rowIndex="4"
+                          GridPane.columnSpan="3"/>
+            </GridPane>
+
+            <Separator/>
+
+            <!-- Meter Entries Section -->
+            <Label text="Meter Entries" styleClass="subsection-title"/>
+            <VBox fx:id="meterEntriesContainer" spacing="5"/>
+            <Button text="+ Add Meter" onAction="#handleAddMeter" styleClass="btn-secondary"/>
+
+            <HBox spacing="10">
+                <Button text="Save Draft" onAction="#handleSaveFlb" styleClass="btn-primary"/>
+                <Button text="Cancel" onAction="#handleCancelFlbForm" styleClass="btn-secondary"/>
+            </HBox>
+        </VBox>
+    </TitledPane>
+
+    <Label fx:id="flbErrorLabel" styleClass="error-label" wrapText="true"/>
+</VBox>

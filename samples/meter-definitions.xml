@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sample meter definitions XML for EMMS Lite import.
+  Package this file inside a ZIP before importing.
+-->
+<meter-definitions version="1.0">
+    <meter>
+        <name>AIRFRAME_HOURS</name>
+        <aircraftType>F-16</aircraftType>
+        <mandatory>true</mandatory>
+        <displayOrder>1</displayOrder>
+        <unit>Hours</unit>
+    </meter>
+    <meter>
+        <name>ENGINE_HOURS_LEFT</name>
+        <aircraftType>F-16</aircraftType>
+        <mandatory>true</mandatory>
+        <displayOrder>2</displayOrder>
+        <unit>Hours</unit>
+    </meter>
+    <meter>
+        <name>ENGINE_HOURS_RIGHT</name>
+        <aircraftType>F-16</aircraftType>
+        <mandatory>true</mandatory>
+        <displayOrder>3</displayOrder>
+        <unit>Hours</unit>
+    </meter>
+    <meter>
+        <name>LANDINGS</name>
+        <aircraftType>F-16</aircraftType>
+        <mandatory>true</mandatory>
+        <displayOrder>4</displayOrder>
+        <unit>Count</unit>
+    </meter>
+    <meter>
+        <name>FUEL_CONSUMED</name>
+        <aircraftType>F-16</aircraftType>
+        <mandatory>false</mandatory>
+        <displayOrder>5</displayOrder>
+        <unit>Liters</unit>
+    </meter>
+    <meter>
+        <name>OIL_LEVEL</name>
+        <aircraftType>F-16</aircraftType>
+        <mandatory>false</mandatory>
+        <displayOrder>6</displayOrder>
+        <unit>Liters</unit>
+    </meter>
+</meter-definitions>

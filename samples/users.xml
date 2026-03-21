@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sample users XML for EMMS Lite import.
+  Package this file inside a ZIP before importing.
+  Note: Imported users will need their passwords reset.
+-->
+<users version="1.0">
+    <user>
+        <serviceId>CAP001</serviceId>
+        <name>Captain Alpha</name>
+        <role>CAPTAIN</role>
+    </user>
+    <user>
+        <serviceId>CAP002</serviceId>
+        <name>Captain Bravo</name>
+        <role>CAPTAIN</role>
+    </user>
+    <user>
+        <serviceId>PLT001</serviceId>
+        <name>Pilot Charlie</name>
+        <role>PILOT</role>
+    </user>
+    <user>
+        <serviceId>PLT002</serviceId>
+        <name>Pilot Delta</name>
+        <role>PILOT</role>
+    </user>
+    <user>
+        <serviceId>PLT003</serviceId>
+        <name>Pilot Echo</name>
+        <role>PILOT</role>
+    </user>
+</users>

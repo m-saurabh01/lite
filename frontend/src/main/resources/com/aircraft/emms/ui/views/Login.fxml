@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" spacing="20" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.aircraft.emms.ui.controller.LoginController"
+      stylesheets="@../css/styles.css" styleClass="login-container"
+      prefWidth="450" prefHeight="500">
+
+    <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+    <Label text="EMMS Lite" styleClass="app-title"/>
+    <Label text="Aircraft Operations Management" styleClass="app-subtitle"/>
+
+    <VBox spacing="10" styleClass="login-form">
+        <Label text="Service ID" styleClass="field-label"/>
+        <TextField fx:id="serviceIdField" promptText="Enter Service ID" maxWidth="300"/>
+
+        <Label text="Password" styleClass="field-label"/>
+        <PasswordField fx:id="passwordField" promptText="Enter Password" maxWidth="300"
+                        onAction="#handleLogin"/>
+
+        <Button fx:id="loginButton" text="Login" onAction="#handleLogin"
+                styleClass="btn-primary" maxWidth="300"/>
+
+        <Hyperlink fx:id="forgotPasswordLink" text="Forgot Password?"
+                   onAction="#handleForgotPassword" styleClass="link"/>
+    </VBox>
+
+    <Label fx:id="errorLabel" styleClass="error-label" wrapText="true" maxWidth="300"/>
+
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <Label fx:id="statusLabel" text="Connecting to backend..." styleClass="status-label"/>
+</VBox>

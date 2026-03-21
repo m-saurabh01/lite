@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.aircraft.emms.ui.controller.XmlImportController"
+      stylesheets="@../css/styles.css">
+
+    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+    <Label text="XML Data Import" styleClass="section-title"/>
+
+    <VBox spacing="10" styleClass="card">
+        <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+        <Label text="Upload a ZIP file containing XML data files." wrapText="true"/>
+        <Label text="Supported: meter definitions, users" styleClass="hint-text"/>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Button text="Select ZIP File..." onAction="#handleSelectFile" styleClass="btn-secondary"/>
+            <Label fx:id="selectedFileLabel" text="No file selected" styleClass="file-info"/>
+        </HBox>
+
+        <Button fx:id="importButton" text="Import" onAction="#handleImport"
+                styleClass="btn-primary" disable="true"/>
+
+        <ProgressBar fx:id="progressBar" visible="false" maxWidth="Infinity"/>
+    </VBox>
+
+    <!-- Import Result -->
+    <VBox fx:id="resultBox" spacing="5" visible="false" styleClass="card">
+        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+        <Label text="Import Result" styleClass="subsection-title"/>
+        <Label fx:id="resultLabel" wrapText="true"/>
+        <TextArea fx:id="errorLogArea" editable="false" prefRowCount="4" visible="false"
+                  styleClass="error-log"/>
+    </VBox>
+
+    <!-- Import History -->
+    <Label text="Import History" styleClass="subsection-title"/>
+    <TableView fx:id="historyTable" prefHeight="200" styleClass="data-table">
+        <columns>
+            <TableColumn text="File" prefWidth="200">
+                <cellValueFactory><PropertyValueFactory property="fileName"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Version" prefWidth="80">
+                <cellValueFactory><PropertyValueFactory property="xmlVersion"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Records" prefWidth="80">
+                <cellValueFactory><PropertyValueFactory property="recordsImported"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Failed" prefWidth="80">
+                <cellValueFactory><PropertyValueFactory property="recordsFailed"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Status" prefWidth="80">
+                <cellValueFactory><PropertyValueFactory property="status"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Date" prefWidth="150">
+                <cellValueFactory><PropertyValueFactory property="importedAt"/></cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+
+    <Label fx:id="importErrorLabel" styleClass="error-label" wrapText="true"/>
+</VBox>

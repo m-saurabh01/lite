@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.aircraft.emms.ui.controller.DashboardController"
+            stylesheets="@../css/styles.css" prefWidth="1024" prefHeight="700">
+
+    <!-- Top toolbar -->
+    <top>
+        <HBox styleClass="toolbar" spacing="10" alignment="CENTER_LEFT">
+            <padding><Insets top="10" right="15" bottom="10" left="15"/></padding>
+            <Label text="EMMS Lite" styleClass="toolbar-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="userInfoLabel" styleClass="user-info"/>
+            <Label fx:id="roleLabel" styleClass="role-badge"/>
+            <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" styleClass="btn-danger-sm"/>
+        </HBox>
+    </top>
+
+    <!-- Left navigation -->
+    <left>
+        <VBox fx:id="navPanel" styleClass="nav-panel" spacing="5" prefWidth="200">
+            <padding><Insets top="15" right="10" bottom="15" left="10"/></padding>
+            <Label text="Navigation" styleClass="nav-header"/>
+            <Separator/>
+            <!-- Nav buttons added dynamically based on role -->
+            <Button fx:id="navSorties" text="Sorties" onAction="#showSorties"
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            <Button fx:id="navFlb" text="Flight Log Book" onAction="#showFlb"
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            <Button fx:id="navUsers" text="Manage Users" onAction="#showUsers"
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            <Button fx:id="navImport" text="XML Import" onAction="#showXmlImport"
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </left>
+
+    <!-- Center content -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+            <Label text="Welcome to EMMS Lite" styleClass="welcome-text"/>
+        </StackPane>
+    </center>
+
+    <!-- Bottom status bar -->
+    <bottom>
+        <HBox styleClass="status-bar" spacing="10" alignment="CENTER_LEFT">
+            <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
+            <Label fx:id="statusBarLabel" text="Ready"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="versionLabel" text="v1.0.0"/>
+        </HBox>
+    </bottom>
+</BorderPane>

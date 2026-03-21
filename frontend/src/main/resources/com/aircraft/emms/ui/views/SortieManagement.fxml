@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.aircraft.emms.ui.controller.SortieController"
+      stylesheets="@../css/styles.css">
+
+    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+    <!-- Header -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Sortie Management" styleClass="section-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="createSortieBtn" text="+ Create Sortie" onAction="#handleCreateSortie"
+                styleClass="btn-primary"/>
+        <Button text="Refresh" onAction="#handleRefresh" styleClass="btn-secondary"/>
+    </HBox>
+
+    <!-- Sortie Table -->
+    <TableView fx:id="sortieTable" VBox.vgrow="ALWAYS" styleClass="data-table">
+        <columns>
+            <TableColumn fx:id="colSortieNum" text="Sortie #" prefWidth="100">
+                <cellValueFactory><PropertyValueFactory property="sortieNumber"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="colAircraftType" text="Aircraft Type" prefWidth="100">
+                <cellValueFactory><PropertyValueFactory property="aircraftType"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="colAircraftNum" text="Aircraft #" prefWidth="100">
+                <cellValueFactory><PropertyValueFactory property="aircraftNumber"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="colDate" text="Date" prefWidth="100">
+                <cellValueFactory><PropertyValueFactory property="scheduledDate"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="colStart" text="Start" prefWidth="70">
+                <cellValueFactory><PropertyValueFactory property="scheduledStart"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="colEnd" text="End" prefWidth="70">
+                <cellValueFactory><PropertyValueFactory property="scheduledEnd"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="colPilot" text="Pilot" prefWidth="120">
+                <cellValueFactory><PropertyValueFactory property="pilotName"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn fx:id="colStatus" text="Status" prefWidth="100">
+                <cellValueFactory><PropertyValueFactory property="status"/></cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+
+    <!-- Action buttons for selected sortie -->
+    <HBox fx:id="actionBar" spacing="10" alignment="CENTER_LEFT">
+        <Button fx:id="assignPilotBtn" text="Assign Pilot" onAction="#handleAssignPilot"
+                styleClass="btn-secondary" disable="true"/>
+        <Button fx:id="acceptBtn" text="Accept" onAction="#handleAccept"
+                styleClass="btn-success" disable="true"/>
+        <Button fx:id="rejectBtn" text="Reject" onAction="#handleReject"
+                styleClass="btn-danger" disable="true"/>
+        <Button fx:id="cancelBtn" text="Cancel Sortie" onAction="#handleCancel"
+                styleClass="btn-danger" disable="true"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="clashLabel" styleClass="clash-warning"/>
+    </HBox>
+
+    <!-- Create/Edit Sortie Form (hidden by default) -->
+    <TitledPane fx:id="formPane" text="Sortie Details" expanded="false" animated="true">
+        <GridPane hgap="10" vgap="10">
+            <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <Label text="Sortie Number:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="sortieNumField" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200"/>
+            <Label text="Aircraft Type:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextField fx:id="aircraftTypeField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label text="Aircraft Number:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+            <TextField fx:id="aircraftNumField" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+            <Label text="Date:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <DatePicker fx:id="datePicker" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <Label text="Start Time (HH:mm):" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+            <TextField fx:id="startTimeField" promptText="09:00" GridPane.columnIndex="3" GridPane.rowIndex="2"/>
+            <Label text="End Time (HH:mm):" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <TextField fx:id="endTimeField" promptText="11:00" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            <Label text="Remarks:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <TextArea fx:id="remarksField" prefRowCount="2" GridPane.columnIndex="1" GridPane.rowIndex="4"
+                      GridPane.columnSpan="3"/>
+            <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                <Button text="Save" onAction="#handleSaveSortie" styleClass="btn-primary"/>
+                <Button text="Cancel" onAction="#handleCancelForm" styleClass="btn-secondary"/>
+            </HBox>
+        </GridPane>
+    </TitledPane>
+
+    <Label fx:id="errorLabel" styleClass="error-label" wrapText="true"/>
+</VBox>
