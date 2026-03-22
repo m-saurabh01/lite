@@ -2,17 +2,15 @@
 -- Insert default admin user (password: Admin@123, BCrypt hash with 12 rounds)
 -- This password MUST be changed on first login in production
 
-INSERT OR IGNORE INTO users (service_id, password, name, role, security_question, security_answer, active, created_at, updated_at)
+INSERT OR IGNORE INTO users (service_id, password, name, role, security_question, security_answer, active)
 VALUES (
     'ADMIN001',
-    '$2a$12$LJ3m4ys3LzHNsqGMbCHB9.mFG3TWXxiKXcPqbD3mSTzGKjPNiblXK',
+    'PLACEHOLDER_HASH',
     'System Administrator',
     'ADMIN',
     'What is the system default code?',
-    '$2a$12$LJ3m4ys3LzHNsqGMbCHB9.mFG3TWXxiKXcPqbD3mSTzGKjPNiblXK',
-    1,
-    datetime('now','localtime'),
-    datetime('now','localtime')
+    'PLACEHOLDER_HASH',
+    1
 );
 
 -- Insert sample meter definitions

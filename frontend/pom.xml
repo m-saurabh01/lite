@@ -70,10 +70,9 @@
                     <mainClass>${mainClass}</mainClass>
                 </configuration>
             </plugin>
-            <!-- Shade plugin: creates a fat JAR with JavaFX + Jackson bundled.
-                 This removes the need for --module-path / --add-modules flags
-                 at runtime. The EmmsLauncher (non-Application) main class
-                 bypasses JavaFX's module check when on classpath. -->
+            <!-- Shade plugin: creates a fat JAR with JavaFX and Jackson bundled.
+                 No module-path or add-modules flags needed at runtime.
+                 EmmsLauncher (non-Application) bypasses JavaFX module check. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

@@ -10,6 +10,11 @@ public class EmmsApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            System.err.println("UNCAUGHT EXCEPTION in " + t.getName() + ": " + e.getMessage());
+            e.printStackTrace();
+        });
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource(
                 "/com/aircraft/emms/ui/views/Login.fxml"));
         Parent root = loader.load();

@@ -45,17 +45,34 @@ public class ApiClient {
         return objectMapper;
     }
 
+    private HttpRequest.Builder newRequest(String path) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + path))
+                .header("Content-Type", "application/json")
+                .timeout(TIMEOUT);
+        String token = SessionManager.getInstance().getToken();
+        if (token != null) {
+            builder.header("Authorization", "Bearer " + token);
+        }
+        return builder;
+    }
+
+    private HttpRequest.Builder newRequest(String path, String contentType, Duration timeout) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + path))
+                .header("Content-Type", contentType)
+                .timeout(timeout);
+        String token = SessionManager.getInstance().getToken();
+        if (token != null) {
+            builder.header("Authorization", "Bearer " + token);
+        }
+        return builder;
+    }
+
     // --- GET ---
 
     public <T> T get(String path, TypeReference<T> typeRef) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + path))
-                .header("Content-Type", "application/json")
-                .headers(authHeaders())
-                .timeout(TIMEOUT)
-                .GET()
-                .build();
-
+        HttpRequest request = newRequest(path).GET().build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         checkStatus(response);
         return objectMapper.readValue(response.body(), typeRef);
@@ -65,15 +82,9 @@ public class ApiClient {
 
     public <T> T post(String path, Object body, TypeReference<T> typeRef) throws IOException, InterruptedException {
         String json = body != null ? objectMapper.writeValueAsString(body) : "{}";
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + path))
-                .header("Content-Type", "application/json")
-                .headers(authHeaders())
-                .timeout(TIMEOUT)
+        HttpRequest request = newRequest(path)
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
-
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         checkStatus(response);
         return objectMapper.readValue(response.body(), typeRef);
@@ -89,15 +100,9 @@ public class ApiClient {
 
     public <T> T put(String path, Object body, TypeReference<T> typeRef) throws IOException, InterruptedException {
         String json = body != null ? objectMapper.writeValueAsString(body) : "{}";
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + path))
-                .header("Content-Type", "application/json")
-                .headers(authHeaders())
-                .timeout(TIMEOUT)
+        HttpRequest request = newRequest(path)
                 .PUT(HttpRequest.BodyPublishers.ofString(json))
                 .build();
-
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         checkStatus(response);
         return objectMapper.readValue(response.body(), typeRef);
@@ -106,14 +111,7 @@ public class ApiClient {
     // --- DELETE ---
 
     public <T> T delete(String path, TypeReference<T> typeRef) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + path))
-                .header("Content-Type", "application/json")
-                .headers(authHeaders())
-                .timeout(TIMEOUT)
-                .DELETE()
-                .build();
-
+        HttpRequest request = newRequest(path).DELETE().build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         checkStatus(response);
         return objectMapper.readValue(response.body(), typeRef);
@@ -139,14 +137,9 @@ public class ApiClient {
         System.arraycopy(fileBytes, 0, body, prefixBytes.length, fileBytes.length);
         System.arraycopy(suffixBytes, 0, body, prefixBytes.length + fileBytes.length, suffixBytes.length);
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + path))
-                .header("Content-Type", "multipart/form-data; boundary=" + boundary)
-                .headers(authHeaders())
-                .timeout(Duration.ofMinutes(5))
+        HttpRequest request = newRequest(path, "multipart/form-data; boundary=" + boundary, Duration.ofMinutes(5))
                 .POST(HttpRequest.BodyPublishers.ofByteArray(body))
                 .build();
-
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         checkStatus(response);
         return objectMapper.readValue(response.body(), typeRef);
@@ -166,14 +159,6 @@ public class ApiClient {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    private String[] authHeaders() {
-        SessionManager session = SessionManager.getInstance();
-        if (session.getToken() != null) {
-            return new String[]{"Authorization", "Bearer " + session.getToken()};
-        }
-        return new String[]{};
     }
 
     private void checkStatus(HttpResponse<String> response) throws IOException {

@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
     security_question TEXT,
     security_answer TEXT,
     active INTEGER NOT NULL DEFAULT 1,
-    created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
-    updated_at TEXT DEFAULT (datetime('now','localtime'))
+    created_at BIGINT,
+    updated_at BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS sorties (
@@ -21,14 +21,14 @@ CREATE TABLE IF NOT EXISTS sorties (
     aircraft_number TEXT NOT NULL,
     captain_id INTEGER,
     pilot_id INTEGER,
-    scheduled_date TEXT NOT NULL,
-    scheduled_start TEXT,
-    scheduled_end TEXT,
+    scheduled_date BIGINT NOT NULL,
+    scheduled_start BIGINT,
+    scheduled_end BIGINT,
     status TEXT NOT NULL DEFAULT 'CREATED' CHECK(status IN ('CREATED','ASSIGNED','ACCEPTED','REJECTED','IN_PROGRESS','COMPLETED','CANCELLED')),
     remarks TEXT,
     created_by_id INTEGER,
-    created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
-    updated_at TEXT DEFAULT (datetime('now','localtime')),
+    created_at BIGINT,
+    updated_at BIGINT,
     FOREIGN KEY (captain_id) REFERENCES users(id),
     FOREIGN KEY (pilot_id) REFERENCES users(id),
     FOREIGN KEY (created_by_id) REFERENCES users(id)
@@ -40,13 +40,13 @@ CREATE TABLE IF NOT EXISTS flight_log_books (
     aircraft_type TEXT NOT NULL,
     aircraft_number TEXT NOT NULL,
     pilot_id INTEGER NOT NULL,
-    actual_takeoff_time TEXT,
-    actual_landing_time TEXT,
+    actual_takeoff_time BIGINT,
+    actual_landing_time BIGINT,
     duration_minutes INTEGER,
     remarks TEXT,
     status TEXT NOT NULL DEFAULT 'DRAFT' CHECK(status IN ('DRAFT','SUBMITTED','APPROVED','REJECTED')),
-    created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
-    updated_at TEXT DEFAULT (datetime('now','localtime')),
+    created_at BIGINT,
+    updated_at BIGINT,
     FOREIGN KEY (sortie_id) REFERENCES sorties(id),
     FOREIGN KEY (pilot_id) REFERENCES users(id)
 );
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS meter_entries (
     meter_name TEXT NOT NULL,
     meter_value TEXT NOT NULL,
     previous_value TEXT,
-    created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+    created_at BIGINT,
     FOREIGN KEY (flb_id) REFERENCES flight_log_books(id),
     FOREIGN KEY (meter_definition_id) REFERENCES meter_definitions(id)
 );
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS xml_import_logs (
     records_failed INTEGER DEFAULT 0,
     status TEXT NOT NULL DEFAULT 'SUCCESS',
     error_message TEXT,
-    imported_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
+    imported_at BIGINT,
     FOREIGN KEY (imported_by_id) REFERENCES users(id)
 );
 
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     entity_id INTEGER,
     details TEXT,
     ip_address TEXT,
-    timestamp TEXT NOT NULL DEFAULT (datetime('now','localtime'))
+    timestamp BIGINT
 );
 
 -- Indexes for performance

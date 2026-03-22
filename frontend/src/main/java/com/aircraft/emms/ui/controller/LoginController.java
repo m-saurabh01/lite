@@ -29,22 +29,31 @@ public class LoginController {
     @FXML
     public void initialize() {
         errorLabel.setText("");
+        System.out.println("[LOGIN] initialize called - fields: serviceId=" + serviceIdField + " password=" + passwordField + " status=" + statusLabel);
         checkBackendConnection();
     }
 
     private void checkBackendConnection() {
+        statusLabel.setText("Checking backend...");
         new Thread(() -> {
-            int retries = 30; // Wait up to 30 seconds for backend
-            while (retries-- > 0) {
+            boolean connected = false;
+            for (int i = 0; i < 30; i++) {
                 if (ApiClient.getInstance().isBackendReady()) {
-                    Platform.runLater(() -> statusLabel.setText("Backend connected"));
-                    return;
+                    connected = true;
+                    break;
                 }
-                try { Thread.sleep(1000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }
-                int remaining = retries;
-                Platform.runLater(() -> statusLabel.setText("Waiting for backend... (" + remaining + "s)"));
+                try { Thread.sleep(1000); } catch (InterruptedException e) { break; }
             }
-            Platform.runLater(() -> statusLabel.setText("Backend unavailable. Please restart."));
+            boolean isConnected = connected;
+            Platform.runLater(() -> {
+                if (isConnected) {
+                    statusLabel.setText("Backend connected");
+                    statusLabel.setStyle("-fx-text-fill: green;");
+                } else {
+                    statusLabel.setText("Backend unavailable. Please restart.");
+                    statusLabel.setStyle("-fx-text-fill: red;");
+                }
+            });
         }).start();
     }
 
@@ -52,6 +61,7 @@ public class LoginController {
     private void handleLogin() {
         String serviceId = serviceIdField.getText().trim();
         String password = passwordField.getText();
+        System.out.println("[LOGIN] handleLogin: serviceId='" + serviceId + "' password.length=" + password.length());
 
         if (serviceId.isEmpty()) {
             showError("Service ID is required");
