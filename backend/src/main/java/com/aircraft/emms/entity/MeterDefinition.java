@@ -36,4 +36,23 @@ public class MeterDefinition {
     @Column(nullable = false)
     @Builder.Default
     private boolean active = true;
+
+    @Column(name = "meter_num", length = 50)
+    private String meterNum;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "meter_type", length = 20)
+    @Builder.Default
+    private MeterType meterType = MeterType.CONTINUOUS;
+
+    @Column(name = "asset_num", length = 100)
+    private String assetNum;
+
+    @Column(name = "initial_value", length = 30)
+    @Builder.Default
+    private String initialValue = "0";
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dataset_id")
+    private AircraftDataSet dataset;
 }

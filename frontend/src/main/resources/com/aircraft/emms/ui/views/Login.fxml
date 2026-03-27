@@ -12,7 +12,7 @@
 
     <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
 
-    <Label text="EMMS Lite" styleClass="app-title"/>
+    <Label text="eMMS Lite" styleClass="app-title"/>
     <Label text="Aircraft Operations Management" styleClass="app-subtitle"/>
 
     <VBox spacing="10" styleClass="login-form">

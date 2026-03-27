@@ -60,6 +60,10 @@ public class FlightLogBook {
     @Builder.Default
     private List<MeterEntry> meterEntries = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dataset_id")
+    private AircraftDataSet dataset;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

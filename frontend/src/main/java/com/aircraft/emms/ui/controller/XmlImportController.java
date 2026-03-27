@@ -1,8 +1,10 @@
 package com.aircraft.emms.ui.controller;
 
 import com.aircraft.emms.ui.model.ApiResponse;
+import com.aircraft.emms.ui.model.ImportLogDto;
 import com.aircraft.emms.ui.service.BackendService;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -11,6 +13,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 
 public class XmlImportController {
 
@@ -20,7 +23,7 @@ public class XmlImportController {
     @FXML private VBox resultBox;
     @FXML private Label resultLabel;
     @FXML private TextArea errorLogArea;
-    @FXML private TableView<?> historyTable;
+    @FXML private TableView<ImportLogDto> historyTable;
     @FXML private Label importErrorLabel;
 
     private final BackendService backend = BackendService.getInstance();
@@ -91,8 +94,14 @@ public class XmlImportController {
     }
 
     private void loadHistory() {
-        // History table would be populated via backend API call
-        // This is a placeholder for the typed endpoint
+        new Thread(() -> {
+            try {
+                List<ImportLogDto> history = backend.getImportHistory();
+                Platform.runLater(() -> historyTable.setItems(FXCollections.observableArrayList(history)));
+            } catch (Exception e) {
+                Platform.runLater(() -> showError("Failed to load history: " + e.getMessage()));
+            }
+        }).start();
     }
 
     private void showError(String msg) {

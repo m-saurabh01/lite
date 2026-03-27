@@ -15,6 +15,7 @@
     <HBox spacing="10" alignment="CENTER_LEFT">
         <Label text="Sortie Management" styleClass="section-title"/>
         <Region HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField" promptText="Search sorties..." styleClass="search-field" prefWidth="200"/>
         <Button fx:id="createSortieBtn" text="+ Create Sortie" onAction="#handleCreateSortie"
                 styleClass="btn-primary"/>
         <Button text="Refresh" onAction="#handleRefresh" styleClass="btn-secondary"/>
@@ -26,7 +27,7 @@
             <TableColumn fx:id="colSortieNum" text="Sortie #" prefWidth="100">
                 <cellValueFactory><PropertyValueFactory property="sortieNumber"/></cellValueFactory>
             </TableColumn>
-            <TableColumn fx:id="colAircraftType" text="Aircraft Type" prefWidth="100">
+            <TableColumn fx:id="colAircraftType" text="Aircraft Name" prefWidth="100">
                 <cellValueFactory><PropertyValueFactory property="aircraftType"/></cellValueFactory>
             </TableColumn>
             <TableColumn fx:id="colAircraftNum" text="Aircraft #" prefWidth="100">
@@ -60,20 +61,26 @@
                 styleClass="btn-danger" disable="true"/>
         <Button fx:id="cancelBtn" text="Cancel Sortie" onAction="#handleCancel"
                 styleClass="btn-danger" disable="true"/>
+        <Button fx:id="closeBtn" text="Close Sortie" onAction="#handleClose"
+                styleClass="btn-secondary" disable="true"/>
         <Region HBox.hgrow="ALWAYS"/>
         <Label fx:id="clashLabel" styleClass="clash-warning"/>
     </HBox>
 
-    <!-- Create/Edit Sortie Form (hidden by default) -->
-    <TitledPane fx:id="formPane" text="Sortie Details" expanded="false" animated="true">
+    <!-- Create/Edit Sortie Form (hidden by default, shown on Create button click) -->
+    <TitledPane fx:id="formPane" text="Sortie Details" expanded="false" animated="true"
+                visible="false" managed="false">
         <GridPane hgap="10" vgap="10">
             <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
             <Label text="Sortie Number:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <TextField fx:id="sortieNumField" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200"/>
-            <Label text="Aircraft Type:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <TextField fx:id="aircraftTypeField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <TextField fx:id="sortieNumField" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200"
+                       editable="false" style="-fx-opacity: 0.8;"/>
+            <Label text="Aircraft Name:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextField fx:id="aircraftTypeField" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                       editable="false" style="-fx-opacity: 0.8;"/>
             <Label text="Aircraft Number:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-            <TextField fx:id="aircraftNumField" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+            <TextField fx:id="aircraftNumField" GridPane.columnIndex="3" GridPane.rowIndex="1"
+                       editable="false" style="-fx-opacity: 0.8;"/>
             <Label text="Date:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
             <DatePicker fx:id="datePicker" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
             <Label text="Start Time (HH:mm):" GridPane.columnIndex="2" GridPane.rowIndex="2"/>

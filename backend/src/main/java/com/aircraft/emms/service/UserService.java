@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,8 +51,17 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
 
         user.setName(dto.getName());
-        user.setRole(dto.getRole());
         user.setActive(dto.isActive());
+
+        // Handle multi-role from dto.getRoles(), fallback to single role
+        if (dto.getRoles() != null && !dto.getRoles().isEmpty()) {
+            Set<Role> roleSet = dto.getRoles().stream()
+                    .map(Role::valueOf)
+                    .collect(Collectors.toSet());
+            user.setRoleSet(roleSet);
+        } else if (dto.getRole() != null) {
+            user.setRole(dto.getRole());
+        }
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -110,6 +121,7 @@ public class UserService {
                 .serviceId(user.getServiceId())
                 .name(user.getName())
                 .role(user.getRole())
+                .roles(user.getRoleSet().stream().map(Enum::name).toList())
                 .securityQuestion(user.getSecurityQuestion())
                 .active(user.isActive())
                 .build();

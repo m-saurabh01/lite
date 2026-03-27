@@ -14,7 +14,13 @@ public interface FlightLogBookRepository extends JpaRepository<FlightLogBook, Lo
 
     List<FlightLogBook> findBySortieId(Long sortieId);
 
+    boolean existsBySortieIdAndStatusNot(Long sortieId, FlbStatus status);
+
     List<FlightLogBook> findByStatus(FlbStatus status);
 
     List<FlightLogBook> findByAircraftTypeAndAircraftNumber(String aircraftType, String aircraftNumber);
+
+    List<FlightLogBook> findByDatasetId(Long datasetId);
+
+    void deleteByDatasetId(Long datasetId);
 }

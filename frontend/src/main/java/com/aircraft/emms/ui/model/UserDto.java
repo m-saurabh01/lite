@@ -1,11 +1,14 @@
 package com.aircraft.emms.ui.model;
 
+import java.util.List;
+
 public class UserDto {
     private Long id;
     private String serviceId;
     private String password;
     private String name;
     private Role role;
+    private List<String> roles;
     private String securityQuestion;
     private String securityAnswer;
     private boolean active;
@@ -22,6 +25,11 @@ public class UserDto {
     public void setName(String name) { this.name = name; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+    public List<String> getRoles() { return roles; }
+    public void setRoles(List<String> roles) { this.roles = roles; }
+    public String getRolesDisplay() {
+        return roles != null ? String.join(", ", roles) : (role != null ? role.name() : "");
+    }
     public String getSecurityQuestion() { return securityQuestion; }
     public void setSecurityQuestion(String securityQuestion) { this.securityQuestion = securityQuestion; }
     public String getSecurityAnswer() { return securityAnswer; }

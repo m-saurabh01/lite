@@ -24,12 +24,12 @@ public class TokenStore {
         this.validityHours = validityHours;
     }
 
-    public String generateToken(String serviceId, String role) {
+    public String generateToken(String serviceId, String roles) {
         byte[] bytes = new byte[TOKEN_LENGTH];
         SECURE_RANDOM.nextBytes(bytes);
         String token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
 
-        tokens.put(token, new TokenEntry(serviceId, role, LocalDateTime.now().plusHours(validityHours)));
+        tokens.put(token, new TokenEntry(serviceId, roles, LocalDateTime.now().plusHours(validityHours)));
         return token;
     }
 
@@ -55,12 +55,12 @@ public class TokenStore {
     @Getter
     public static class TokenEntry {
         private final String serviceId;
-        private final String role;
+        private final String roles; // comma-separated
         private final LocalDateTime expiresAt;
 
-        public TokenEntry(String serviceId, String role, LocalDateTime expiresAt) {
+        public TokenEntry(String serviceId, String roles, LocalDateTime expiresAt) {
             this.serviceId = serviceId;
-            this.role = role;
+            this.roles = roles;
             this.expiresAt = expiresAt;
         }
     }

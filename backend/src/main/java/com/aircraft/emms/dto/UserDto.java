@@ -2,8 +2,9 @@ package com.aircraft.emms.dto;
 
 import com.aircraft.emms.entity.Role;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.List;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
@@ -20,8 +21,8 @@ public class UserDto {
     @NotBlank(message = "Name is required")
     private String name;
 
-    @NotNull(message = "Role is required")
     private Role role;
+    private List<String> roles;
 
     private String securityQuestion;
     private String securityAnswer;

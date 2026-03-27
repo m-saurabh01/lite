@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="15" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.aircraft.emms.ui.controller.AircraftManagementController"
+      stylesheets="@../css/styles.css">
+
+    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+    <!-- Header -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Aircraft Management" styleClass="section-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="aircraftSearchField" promptText="Search aircraft..." styleClass="search-field" prefWidth="200"/>
+        <Label fx:id="activeAircraftLabel" styleClass="active-aircraft-badge"/>
+        <Button text="Refresh" onAction="#handleRefresh" styleClass="btn-secondary"/>
+    </HBox>
+
+    <!-- Aircraft Datasets Table -->
+    <Label text="Imported Aircraft Datasets" styleClass="subsection-title"/>
+    <TableView fx:id="aircraftTable" VBox.vgrow="ALWAYS" styleClass="data-table" prefHeight="200">
+        <columns>
+            <TableColumn text="ID" prefWidth="50">
+                <cellValueFactory><PropertyValueFactory property="id"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Asset #" prefWidth="120">
+                <cellValueFactory><PropertyValueFactory property="assetNum"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Aircraft Name" prefWidth="150">
+                <cellValueFactory><PropertyValueFactory property="aircraftName"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Aircraft Type" prefWidth="120">
+                <cellValueFactory><PropertyValueFactory property="aircraftType"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Active" prefWidth="80">
+                <cellValueFactory><PropertyValueFactory property="active"/></cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Imported At" prefWidth="150">
+                <cellValueFactory><PropertyValueFactory property="formattedImportedAt"/></cellValueFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button fx:id="activateBtn" text="Activate Selected" onAction="#handleActivate"
+                styleClass="btn-primary" disable="true"/>
+        <Button fx:id="truncateBtn" text="Truncate Selected" onAction="#handleTruncate"
+                styleClass="btn-danger" disable="true"/>
+    </HBox>
+
+    <Label fx:id="errorLabel" styleClass="error-label" wrapText="true"/>
+</VBox>

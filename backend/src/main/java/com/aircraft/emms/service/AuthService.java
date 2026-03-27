@@ -31,7 +31,8 @@ public class AuthService {
         User user = userRepository.findByServiceId(request.getServiceId())
                 .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
 
-        String token = tokenStore.generateToken(user.getServiceId(), user.getRole().name());
+        String rolesStr = user.getRoles() != null && !user.getRoles().isBlank() ? user.getRoles() : user.getRole().name();
+        String token = tokenStore.generateToken(user.getServiceId(), rolesStr);
 
         auditService.log(user.getServiceId(), "LOGIN", "User", user.getId(), "User logged in");
 
@@ -40,6 +41,7 @@ public class AuthService {
                 .serviceId(user.getServiceId())
                 .name(user.getName())
                 .role(user.getRole())
+                .roles(java.util.Arrays.asList(rolesStr.split(",")))
                 .build();
     }
 

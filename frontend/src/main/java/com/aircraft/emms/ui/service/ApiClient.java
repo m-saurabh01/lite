@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class ApiClient {
 
-    private static final String BASE_URL = "http://127.0.0.1:8095/api";
+    private static final String BASE_URL = "http://127.0.0.1:8096/api";
     private static final Duration TIMEOUT = Duration.ofSeconds(30);
 
     private final HttpClient httpClient;

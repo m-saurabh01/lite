@@ -58,7 +58,7 @@
                 <cellValueFactory><PropertyValueFactory property="status"/></cellValueFactory>
             </TableColumn>
             <TableColumn text="Date" prefWidth="150">
-                <cellValueFactory><PropertyValueFactory property="importedAt"/></cellValueFactory>
+                <cellValueFactory><PropertyValueFactory property="formattedImportedAt"/></cellValueFactory>
             </TableColumn>
         </columns>
     </TableView>

@@ -17,4 +17,6 @@ public interface MeterEntryRepository extends JpaRepository<MeterEntry, Long> {
     @Query("SELECT me FROM MeterEntry me WHERE me.meterName = :meterName " +
            "ORDER BY me.createdAt DESC LIMIT 1")
     Optional<MeterEntry> findLatestByMeterName(@Param("meterName") String meterName);
+
+    void deleteByFlightLogBookId(Long flbId);
 }

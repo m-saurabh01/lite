@@ -5,6 +5,7 @@ public enum SortieStatus {
     ASSIGNED,
     ACCEPTED,
     REJECTED,
+    CLOSED,
     IN_PROGRESS,
     COMPLETED,
     CANCELLED

@@ -21,32 +21,40 @@ public class FlightLogBookService {
     private final MeterDefinitionRepository meterDefRepository;
     private final MeterEntryRepository meterEntryRepository;
     private final AuditService auditService;
+    private final AircraftDataSetService aircraftService;
 
     @Transactional
     public FlightLogBookDto createFlb(FlightLogBookDto dto, String createdBy) {
+        AircraftDataSet dataset = aircraftService.requireActiveDataset();
+
         User pilot = userRepository.findById(dto.getPilotId())
                 .orElseThrow(() -> new IllegalArgumentException("Pilot not found"));
 
         FlightLogBook flb = FlightLogBook.builder()
-                .aircraftType(dto.getAircraftType())
-                .aircraftNumber(dto.getAircraftNumber())
+                .aircraftType(dataset.getAircraftName())
+                .aircraftNumber(dataset.getAssetNum())
                 .pilot(pilot)
                 .actualTakeoffTime(dto.getActualTakeoffTime())
                 .actualLandingTime(dto.getActualLandingTime())
                 .remarks(dto.getRemarks())
                 .status(FlbStatus.DRAFT)
+                .dataset(dataset)
                 .build();
 
-        // Link to sortie if provided
         if (dto.getSortieId() != null) {
             Sortie sortie = sortieRepository.findById(dto.getSortieId())
                     .orElseThrow(() -> new IllegalArgumentException("Sortie not found"));
             flb.setSortie(sortie);
         }
 
+        // Validate landing time after takeoff time
+        if (flb.getActualTakeoffTime() != null && flb.getActualLandingTime() != null
+                && !flb.getActualLandingTime().isAfter(flb.getActualTakeoffTime())) {
+            throw new IllegalArgumentException("Landing time must be after takeoff time");
+        }
+
         flb.calculateDuration();
 
-        // Process meter entries
         if (dto.getMeterEntries() != null) {
             for (MeterEntryDto meDto : dto.getMeterEntries()) {
                 MeterEntry entry = MeterEntry.builder()
@@ -54,13 +62,10 @@ public class FlightLogBookService {
                         .meterValue(meDto.getMeterValue())
                         .previousValue(meDto.getPreviousValue())
                         .build();
-
                 if (meDto.getMeterDefinitionId() != null) {
-                    MeterDefinition def = meterDefRepository.findById(meDto.getMeterDefinitionId())
-                            .orElse(null);
+                    MeterDefinition def = meterDefRepository.findById(meDto.getMeterDefinitionId()).orElse(null);
                     entry.setMeterDefinition(def);
                 }
-
                 flb.addMeterEntry(entry);
             }
         }
@@ -77,8 +82,8 @@ public class FlightLogBookService {
         FlightLogBook flb = flbRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("FLB not found: " + id));
 
-        if (flb.getStatus() != FlbStatus.DRAFT) {
-            throw new IllegalStateException("Can only edit FLB in DRAFT status");
+        if (flb.getStatus() != FlbStatus.OPEN && flb.getStatus() != FlbStatus.DRAFT) {
+            throw new IllegalStateException("Can only edit FLB in OPEN/DRAFT status");
         }
 
         flb.setActualTakeoffTime(dto.getActualTakeoffTime());
@@ -86,7 +91,13 @@ public class FlightLogBookService {
         flb.setRemarks(dto.getRemarks());
         flb.calculateDuration();
 
-        // Update meter entries - clear and re-add
+        // Auto-transition: DRAFT -> OPEN when times are filled
+        if (flb.getStatus() == FlbStatus.DRAFT
+                && flb.getActualTakeoffTime() != null
+                && flb.getActualLandingTime() != null) {
+            flb.setStatus(FlbStatus.OPEN);
+        }
+
         flb.getMeterEntries().clear();
         if (dto.getMeterEntries() != null) {
             for (MeterEntryDto meDto : dto.getMeterEntries()) {
@@ -95,13 +106,10 @@ public class FlightLogBookService {
                         .meterValue(meDto.getMeterValue())
                         .previousValue(meDto.getPreviousValue())
                         .build();
-
                 if (meDto.getMeterDefinitionId() != null) {
-                    MeterDefinition def = meterDefRepository.findById(meDto.getMeterDefinitionId())
-                            .orElse(null);
+                    MeterDefinition def = meterDefRepository.findById(meDto.getMeterDefinitionId()).orElse(null);
                     entry.setMeterDefinition(def);
                 }
-
                 flb.addMeterEntry(entry);
             }
         }
@@ -114,40 +122,39 @@ public class FlightLogBookService {
     }
 
     @Transactional
-    public FlightLogBookDto submitFlb(Long id, String submittedBy) {
+    public FlightLogBookDto closeFlb(Long id, String closedBy) {
         FlightLogBook flb = flbRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("FLB not found: " + id));
 
-        if (flb.getStatus() != FlbStatus.DRAFT) {
-            throw new IllegalStateException("Can only submit FLB in DRAFT status");
+        if (flb.getStatus() != FlbStatus.OPEN) {
+            throw new IllegalStateException("Can only close FLB in OPEN status");
         }
 
-        // Validate mandatory meters
         validateMandatoryMeters(flb);
 
-        flb.setStatus(FlbStatus.SUBMITTED);
+        flb.setStatus(FlbStatus.CLOSED);
         flb = flbRepository.save(flb);
 
-        auditService.log(submittedBy, "SUBMIT_FLB", "FlightLogBook", flb.getId(),
-                "Submitted FLB for aircraft " + flb.getAircraftNumber());
+        auditService.log(closedBy, "CLOSE_FLB", "FlightLogBook", flb.getId(),
+                "Closed FLB for aircraft " + flb.getAircraftNumber());
 
         return toDto(flb);
     }
 
     @Transactional
-    public FlightLogBookDto approveFlb(Long id, String approvedBy) {
+    public FlightLogBookDto abortFlb(Long id, String abortedBy) {
         FlightLogBook flb = flbRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("FLB not found: " + id));
 
-        if (flb.getStatus() != FlbStatus.SUBMITTED) {
-            throw new IllegalStateException("Can only approve FLB in SUBMITTED status");
+        if (flb.getStatus() != FlbStatus.OPEN && flb.getStatus() != FlbStatus.DRAFT) {
+            throw new IllegalStateException("Can only abort FLB in DRAFT/OPEN status");
         }
 
-        flb.setStatus(FlbStatus.APPROVED);
+        flb.setStatus(FlbStatus.ABORTED);
         flb = flbRepository.save(flb);
 
-        auditService.log(approvedBy, "APPROVE_FLB", "FlightLogBook", flb.getId(),
-                "Approved FLB for aircraft " + flb.getAircraftNumber());
+        auditService.log(abortedBy, "ABORT_FLB", "FlightLogBook", flb.getId(),
+                "Aborted FLB for aircraft " + flb.getAircraftNumber());
 
         return toDto(flb);
     }
@@ -169,6 +176,24 @@ public class FlightLogBookService {
         return flbRepository.findAll().stream().map(this::toDto).toList();
     }
 
+    /**
+     * Fetch meter definitions for the active aircraft's dataset.
+     */
+    @Transactional(readOnly = true)
+    public List<MeterEntryDto> getMeterDefinitionsForActiveAircraft() {
+        AircraftDataSet dataset = aircraftService.requireActiveDataset();
+        List<MeterDefinition> defs = meterDefRepository
+                .findByDatasetIdAndActiveTrueOrderByDisplayOrderAsc(dataset.getId());
+
+        return defs.stream().map(def -> MeterEntryDto.builder()
+                .meterDefinitionId(def.getId())
+                .meterName(def.getMeterName())
+                .mandatory(def.isMandatory())
+                .unitOfMeasure(def.getUnitOfMeasure())
+                .build()
+        ).toList();
+    }
+
     @Transactional(readOnly = true)
     public List<MeterEntryDto> getMeterDefinitionsForAircraft(String aircraftType) {
         List<MeterDefinition> defs = meterDefRepository
@@ -184,9 +209,17 @@ public class FlightLogBookService {
     }
 
     private void validateMandatoryMeters(FlightLogBook flb) {
-        List<MeterDefinition> mandatoryDefs = meterDefRepository
-                .findByAircraftTypeAndActiveTrueOrderByDisplayOrderAsc(flb.getAircraftType())
-                .stream().filter(MeterDefinition::isMandatory).toList();
+        // Get mandatory meters from dataset if available, else from aircraft type
+        List<MeterDefinition> mandatoryDefs;
+        if (flb.getDataset() != null) {
+            mandatoryDefs = meterDefRepository
+                    .findByDatasetIdAndActiveTrueOrderByDisplayOrderAsc(flb.getDataset().getId())
+                    .stream().filter(MeterDefinition::isMandatory).toList();
+        } else {
+            mandatoryDefs = meterDefRepository
+                    .findByAircraftTypeAndActiveTrueOrderByDisplayOrderAsc(flb.getAircraftType())
+                    .stream().filter(MeterDefinition::isMandatory).toList();
+        }
 
         List<String> missingMeters = new ArrayList<>();
         for (MeterDefinition def : mandatoryDefs) {
@@ -211,6 +244,8 @@ public class FlightLogBookService {
                         .meterName(me.getMeterName())
                         .meterValue(me.getMeterValue())
                         .previousValue(me.getPreviousValue())
+                        .mandatory(me.getMeterDefinition() != null && me.getMeterDefinition().isMandatory())
+                        .unitOfMeasure(me.getMeterDefinition() != null ? me.getMeterDefinition().getUnitOfMeasure() : null)
                         .build()
                 ).toList();
 

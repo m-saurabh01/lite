@@ -63,6 +63,10 @@ public class Sortie {
     @JoinColumn(name = "created_by_id")
     private User createdBy;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dataset_id")
+    private AircraftDataSet dataset;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

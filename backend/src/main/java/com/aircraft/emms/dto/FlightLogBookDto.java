@@ -16,10 +16,8 @@ public class FlightLogBookDto {
     private Long sortieId;
     private String sortieNumber;
 
-    @NotBlank(message = "Aircraft type is required")
     private String aircraftType;
 
-    @NotBlank(message = "Aircraft number is required")
     private String aircraftNumber;
 
     private Long pilotId;

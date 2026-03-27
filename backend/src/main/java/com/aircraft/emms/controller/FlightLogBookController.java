@@ -41,21 +41,20 @@ public class FlightLogBookController {
         return ResponseEntity.ok(ApiResponse.ok("FLB updated", updated));
     }
 
-    @PostMapping("/{id}/submit")
-    public ResponseEntity<ApiResponse<FlightLogBookDto>> submitFlb(
+    @PostMapping("/{id}/close")
+    public ResponseEntity<ApiResponse<FlightLogBookDto>> closeFlb(
             @PathVariable Long id,
             Authentication auth) {
-        FlightLogBookDto submitted = flbService.submitFlb(id, auth.getName());
-        return ResponseEntity.ok(ApiResponse.ok("FLB submitted", submitted));
+        FlightLogBookDto closed = flbService.closeFlb(id, auth.getName());
+        return ResponseEntity.ok(ApiResponse.ok("FLB closed", closed));
     }
 
-    @PostMapping("/{id}/approve")
-    @PreAuthorize("hasAnyRole('ADMIN', 'CAPTAIN')")
-    public ResponseEntity<ApiResponse<FlightLogBookDto>> approveFlb(
+    @PostMapping("/{id}/abort")
+    public ResponseEntity<ApiResponse<FlightLogBookDto>> abortFlb(
             @PathVariable Long id,
             Authentication auth) {
-        FlightLogBookDto approved = flbService.approveFlb(id, auth.getName());
-        return ResponseEntity.ok(ApiResponse.ok("FLB approved", approved));
+        FlightLogBookDto aborted = flbService.abortFlb(id, auth.getName());
+        return ResponseEntity.ok(ApiResponse.ok("FLB aborted", aborted));
     }
 
     @GetMapping("/{id}")
@@ -78,5 +77,10 @@ public class FlightLogBookController {
     public ResponseEntity<ApiResponse<List<MeterEntryDto>>> getMeterDefinitions(
             @PathVariable String aircraftType) {
         return ResponseEntity.ok(ApiResponse.ok(flbService.getMeterDefinitionsForAircraft(aircraftType)));
+    }
+
+    @GetMapping("/meter-definitions")
+    public ResponseEntity<ApiResponse<List<MeterEntryDto>>> getActiveAircraftMeterDefs() {
+        return ResponseEntity.ok(ApiResponse.ok(flbService.getMeterDefinitionsForActiveAircraft()));
     }
 }

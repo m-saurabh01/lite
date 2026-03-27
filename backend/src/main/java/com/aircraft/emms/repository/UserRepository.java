@@ -20,4 +20,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByActiveTrue();
 
     List<User> findByRoleAndActiveTrue(Role role);
+
+    List<User> findByDatasetId(Long datasetId);
+
+    List<User> findByDatasetIdAndActiveTrue(Long datasetId);
+
+    Optional<User> findByServiceIdAndDatasetId(String serviceId, Long datasetId);
+
+    void deleteByDatasetId(Long datasetId);
 }

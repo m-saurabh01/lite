@@ -11,6 +11,7 @@ public class MeterEntryDto {
     private BigDecimal previousValue;
     private boolean mandatory;
     private String unitOfMeasure;
+    private String validationMsg;
 
     public MeterEntryDto() {}
 
@@ -30,4 +31,6 @@ public class MeterEntryDto {
     public void setMandatory(boolean mandatory) { this.mandatory = mandatory; }
     public String getUnitOfMeasure() { return unitOfMeasure; }
     public void setUnitOfMeasure(String unitOfMeasure) { this.unitOfMeasure = unitOfMeasure; }
+    public String getValidationMsg() { return validationMsg; }
+    public void setValidationMsg(String validationMsg) { this.validationMsg = validationMsg; }
 }

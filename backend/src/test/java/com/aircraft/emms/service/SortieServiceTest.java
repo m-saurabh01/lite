@@ -117,7 +117,7 @@ class SortieServiceTest {
         testSortie.setStatus(SortieStatus.COMPLETED);
         when(sortieRepository.findById(1L)).thenReturn(Optional.of(testSortie));
 
-        assertThatThrownBy(() -> sortieService.updateSortieStatus(1L, SortieStatus.ACCEPTED, "PLT001"))
+        assertThatThrownBy(() -> sortieService.updateSortieStatus(1L, SortieStatus.ACCEPTED, "PLT001", null))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Invalid status transition");
     }
@@ -128,7 +128,7 @@ class SortieServiceTest {
         when(sortieRepository.findById(1L)).thenReturn(Optional.of(testSortie));
         when(sortieRepository.save(any())).thenReturn(testSortie);
 
-        SortieDto result = sortieService.updateSortieStatus(1L, SortieStatus.ACCEPTED, "PLT001");
+        SortieDto result = sortieService.updateSortieStatus(1L, SortieStatus.ACCEPTED, "PLT001", null);
 
         assertThat(result.getStatus()).isEqualTo(SortieStatus.ACCEPTED);
     }

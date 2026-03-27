@@ -76,37 +76,25 @@ class FlightLogBookServiceTest {
     }
 
     @Test
-    void submitFlb_notDraft_shouldThrow() {
-        testFlb.setStatus(FlbStatus.SUBMITTED);
+    void closeFlb_notOpen_shouldThrow() {
+        testFlb.setStatus(FlbStatus.DRAFT);
         when(flbRepository.findById(1L)).thenReturn(Optional.of(testFlb));
 
-        assertThatThrownBy(() -> flbService.submitFlb(1L, "PLT001"))
+        assertThatThrownBy(() -> flbService.closeFlb(1L, "PLT001"))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("DRAFT");
+                .hasMessageContaining("OPEN");
     }
 
     @Test
-    void submitFlb_missingMandatoryMeters_shouldThrow() {
-        MeterDefinition mandatory = MeterDefinition.builder()
-                .id(1L).meterName("AIRFRAME_HOURS").mandatory(true).build();
-
-        when(flbRepository.findById(1L)).thenReturn(Optional.of(testFlb));
-        when(meterDefRepository.findByAircraftTypeAndActiveTrueOrderByDisplayOrderAsc("F-16"))
-                .thenReturn(List.of(mandatory));
-
-        assertThatThrownBy(() -> flbService.submitFlb(1L, "PLT001"))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("AIRFRAME_HOURS");
-    }
-
-    @Test
-    void approveFlb_shouldSucceedWhenSubmitted() {
-        testFlb.setStatus(FlbStatus.SUBMITTED);
+    void closeFlb_shouldSucceedWhenOpen() {
+        testFlb.setStatus(FlbStatus.OPEN);
         when(flbRepository.findById(1L)).thenReturn(Optional.of(testFlb));
         when(flbRepository.save(any())).thenReturn(testFlb);
+        when(meterDefRepository.findByAircraftTypeAndActiveTrueOrderByDisplayOrderAsc("F-16"))
+                .thenReturn(List.of());
 
-        FlightLogBookDto result = flbService.approveFlb(1L, "CAP001");
+        FlightLogBookDto result = flbService.closeFlb(1L, "PLT001");
 
-        assertThat(result.getStatus()).isEqualTo(FlbStatus.APPROVED);
+        assertThat(result.getStatus()).isEqualTo(FlbStatus.CLOSED);
     }
 }

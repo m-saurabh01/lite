@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/xml-import/**").hasRole("ADMIN")
                 .requestMatchers("/api/users/manage/**").hasRole("ADMIN")
                 // Captain endpoints
-                .requestMatchers("/api/sorties/create").hasAnyRole("ADMIN", "CAPTAIN")
+                .requestMatchers("/api/sorties/create").hasRole("CAPTAIN")
                 .requestMatchers("/api/sorties/assign").hasAnyRole("ADMIN", "CAPTAIN")
                 // All authenticated users
                 .anyRequest().authenticated()

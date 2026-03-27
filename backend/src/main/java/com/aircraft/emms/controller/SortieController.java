@@ -48,7 +48,7 @@ public class SortieController {
     public ResponseEntity<ApiResponse<SortieDto>> acceptSortie(
             @PathVariable Long id,
             Authentication auth) {
-        SortieDto updated = sortieService.updateSortieStatus(id, SortieStatus.ACCEPTED, auth.getName());
+        SortieDto updated = sortieService.updateSortieStatus(id, SortieStatus.ACCEPTED, auth.getName(), null);
         return ResponseEntity.ok(ApiResponse.ok("Sortie accepted", updated));
     }
 
@@ -56,8 +56,9 @@ public class SortieController {
     @PreAuthorize("hasRole('PILOT')")
     public ResponseEntity<ApiResponse<SortieDto>> rejectSortie(
             @PathVariable Long id,
+            @RequestParam(required = false) String remarks,
             Authentication auth) {
-        SortieDto updated = sortieService.updateSortieStatus(id, SortieStatus.REJECTED, auth.getName());
+        SortieDto updated = sortieService.updateSortieStatus(id, SortieStatus.REJECTED, auth.getName(), remarks);
         return ResponseEntity.ok(ApiResponse.ok("Sortie rejected", updated));
     }
 
@@ -65,7 +66,7 @@ public class SortieController {
     public ResponseEntity<ApiResponse<SortieDto>> startSortie(
             @PathVariable Long id,
             Authentication auth) {
-        SortieDto updated = sortieService.updateSortieStatus(id, SortieStatus.IN_PROGRESS, auth.getName());
+        SortieDto updated = sortieService.updateSortieStatus(id, SortieStatus.IN_PROGRESS, auth.getName(), null);
         return ResponseEntity.ok(ApiResponse.ok("Sortie started", updated));
     }
 
@@ -73,7 +74,7 @@ public class SortieController {
     public ResponseEntity<ApiResponse<SortieDto>> completeSortie(
             @PathVariable Long id,
             Authentication auth) {
-        SortieDto updated = sortieService.updateSortieStatus(id, SortieStatus.COMPLETED, auth.getName());
+        SortieDto updated = sortieService.updateSortieStatus(id, SortieStatus.COMPLETED, auth.getName(), null);
         return ResponseEntity.ok(ApiResponse.ok("Sortie completed", updated));
     }
 
@@ -82,8 +83,16 @@ public class SortieController {
     public ResponseEntity<ApiResponse<SortieDto>> cancelSortie(
             @PathVariable Long id,
             Authentication auth) {
-        SortieDto updated = sortieService.updateSortieStatus(id, SortieStatus.CANCELLED, auth.getName());
+        SortieDto updated = sortieService.updateSortieStatus(id, SortieStatus.CANCELLED, auth.getName(), null);
         return ResponseEntity.ok(ApiResponse.ok("Sortie cancelled", updated));
+    }
+
+    @PostMapping("/{id}/close")
+    public ResponseEntity<ApiResponse<SortieDto>> closeSortie(
+            @PathVariable Long id,
+            Authentication auth) {
+        SortieDto updated = sortieService.updateSortieStatus(id, SortieStatus.CLOSED, auth.getName(), null);
+        return ResponseEntity.ok(ApiResponse.ok("Sortie closed", updated));
     }
 
     @GetMapping
@@ -99,11 +108,20 @@ public class SortieController {
     @GetMapping("/my-sorties")
     public ResponseEntity<ApiResponse<List<SortieDto>>> getMySorties(Authentication auth) {
         var user = userService.getUserByServiceId(auth.getName());
-        List<SortieDto> sorties = switch (user.getRole()) {
-            case CAPTAIN -> sortieService.getSortiesByCaptain(user.getId());
-            case PILOT -> sortieService.getSortiesByPilot(user.getId());
-            case ADMIN -> sortieService.getAllSorties();
-        };
+        var roles = user.getRoles() != null ? user.getRoles() : List.of(user.getRole().name());
+        List<SortieDto> sorties;
+        if (roles.contains("ADMIN")) {
+            sorties = sortieService.getAllSorties();
+        } else if (roles.contains("CAPTAIN") && roles.contains("PILOT")) {
+            // User has both roles — fetch sorties where they are captain OR pilot
+            sorties = sortieService.getSortiesByCaptainOrPilot(user.getId());
+        } else if (roles.contains("CAPTAIN")) {
+            sorties = sortieService.getSortiesByCaptain(user.getId());
+        } else if (roles.contains("PILOT")) {
+            sorties = sortieService.getSortiesByPilot(user.getId());
+        } else {
+            sorties = sortieService.getAllSorties();
+        }
         return ResponseEntity.ok(ApiResponse.ok(sorties));
     }
 

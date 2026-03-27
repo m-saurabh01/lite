@@ -7,10 +7,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-/**
- * High-level API service methods used by controllers.
- * Wraps ApiClient with typed methods.
- */
 public class BackendService {
 
     private static final BackendService INSTANCE = new BackendService();
@@ -99,8 +95,22 @@ public class BackendService {
         return resp.getData();
     }
 
-    public SortieDto rejectSortie(Long id) throws IOException, InterruptedException {
-        ApiResponse<SortieDto> resp = api.post("/sorties/" + id + "/reject", new TypeReference<>() {});
+    public SortieDto rejectSortie(Long id, String remarks) throws IOException, InterruptedException {
+        String url = "/sorties/" + id + "/reject";
+        if (remarks != null && !remarks.isBlank()) {
+            url += "?remarks=" + java.net.URLEncoder.encode(remarks, java.nio.charset.StandardCharsets.UTF_8);
+        }
+        ApiResponse<SortieDto> resp = api.post(url, new TypeReference<>() {});
+        return resp.getData();
+    }
+
+    public SortieDto cancelSortie(Long id) throws IOException, InterruptedException {
+        ApiResponse<SortieDto> resp = api.post("/sorties/" + id + "/cancel", new TypeReference<>() {});
+        return resp.getData();
+    }
+
+    public SortieDto closeSortie(Long id) throws IOException, InterruptedException {
+        ApiResponse<SortieDto> resp = api.post("/sorties/" + id + "/close", new TypeReference<>() {});
         return resp.getData();
     }
 
@@ -131,8 +141,13 @@ public class BackendService {
         return resp.getData();
     }
 
-    public FlightLogBookDto submitFlb(Long id) throws IOException, InterruptedException {
-        ApiResponse<FlightLogBookDto> resp = api.post("/flb/" + id + "/submit", new TypeReference<>() {});
+    public FlightLogBookDto closeFlb(Long id) throws IOException, InterruptedException {
+        ApiResponse<FlightLogBookDto> resp = api.post("/flb/" + id + "/close", new TypeReference<>() {});
+        return resp.getData();
+    }
+
+    public FlightLogBookDto abortFlb(Long id) throws IOException, InterruptedException {
+        ApiResponse<FlightLogBookDto> resp = api.post("/flb/" + id + "/abort", new TypeReference<>() {});
         return resp.getData();
     }
 
@@ -152,9 +167,61 @@ public class BackendService {
         return resp.getData();
     }
 
+    public List<MeterEntryDto> getActiveAircraftMeterDefs() throws IOException, InterruptedException {
+        ApiResponse<List<MeterEntryDto>> resp = api.get("/flb/meter-definitions",
+                new TypeReference<>() {});
+        return resp.getData();
+    }
+
     // ---- XML Import ----
 
     public ApiResponse<Object> importXmlZip(java.nio.file.Path filePath) throws IOException, InterruptedException {
         return api.uploadFile("/xml-import/upload", filePath, new TypeReference<>() {});
+    }
+
+    public List<ImportLogDto> getImportHistory() throws IOException, InterruptedException {
+        ApiResponse<List<ImportLogDto>> resp = api.get("/xml-import/history", new TypeReference<>() {});
+        return resp.getData();
+    }
+
+    // ---- Admin: Aircraft Management ----
+
+    public List<AircraftDataSetDto> listAircraft() throws IOException, InterruptedException {
+        ApiResponse<List<AircraftDataSetDto>> resp = api.get("/admin/aircraft", new TypeReference<>() {});
+        return resp.getData();
+    }
+
+    public AircraftDataSetDto getActiveAircraft() throws IOException, InterruptedException {
+        ApiResponse<AircraftDataSetDto> resp = api.get("/aircraft/active", new TypeReference<>() {});
+        return resp.getData();
+    }
+
+    public AircraftDataSetDto activateAircraft(Long id) throws IOException, InterruptedException {
+        ApiResponse<AircraftDataSetDto> resp = api.post("/admin/aircraft/" + id + "/activate",
+                new TypeReference<>() {});
+        return resp.getData();
+    }
+
+    public void truncateAircraft(Long id) throws IOException, InterruptedException {
+        api.delete("/admin/aircraft/" + id + "/truncate", new TypeReference<ApiResponse<Void>>() {});
+    }
+
+    // ---- Admin: Role Assignment ----
+
+    public List<UserDto> getAircraftUsers() throws IOException, InterruptedException {
+        ApiResponse<List<UserDto>> resp = api.get("/admin/aircraft-users", new TypeReference<>() {});
+        return resp.getData();
+    }
+
+    public UserDto assignRole(Long userId, Role role) throws IOException, InterruptedException {
+        Map<String, String> body = Map.of("userId", userId.toString(), "role", role.name());
+        ApiResponse<UserDto> resp = api.post("/admin/assign-role", body, new TypeReference<>() {});
+        return resp.getData();
+    }
+
+    public UserDto removeRole(Long userId, Role role) throws IOException, InterruptedException {
+        Map<String, String> body = Map.of("userId", userId.toString(), "role", role.name());
+        ApiResponse<UserDto> resp = api.post("/admin/remove-role", body, new TypeReference<>() {});
+        return resp.getData();
     }
 }

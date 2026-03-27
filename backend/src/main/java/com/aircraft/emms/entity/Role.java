@@ -6,5 +6,7 @@ package com.aircraft.emms.entity;
 public enum Role {
     ADMIN,
     CAPTAIN,
-    PILOT
+    PILOT,
+    TECHNICIAN,
+    MECHANIC
 }

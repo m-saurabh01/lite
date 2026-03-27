@@ -6,54 +6,62 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.aircraft.emms.ui.controller.DashboardController"
-            stylesheets="@../css/styles.css" prefWidth="1024" prefHeight="700">
+            stylesheets="@../css/styles.css" prefWidth="1100" prefHeight="720">
 
     <!-- Top toolbar -->
     <top>
         <HBox styleClass="toolbar" spacing="10" alignment="CENTER_LEFT">
-            <padding><Insets top="10" right="15" bottom="10" left="15"/></padding>
-            <Label text="EMMS Lite" styleClass="toolbar-title"/>
+            <padding><Insets top="10" right="20" bottom="10" left="20"/></padding>
+            <Label text="eMMS Lite" styleClass="toolbar-title"/>
+            <Label text="v1.0.0" styleClass="version-badge"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="userInfoLabel" styleClass="user-info"/>
-            <Label fx:id="roleLabel" styleClass="role-badge"/>
-            <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" styleClass="btn-danger-sm"/>
+            <HBox alignment="CENTER_RIGHT" spacing="8">
+                <Label fx:id="userInfoLabel" styleClass="user-info"/>
+                <Label fx:id="roleLabel" styleClass="role-badge"/>
+            </HBox>
+            <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" styleClass="btn-logout"/>
         </HBox>
     </top>
 
     <!-- Left navigation -->
     <left>
-        <VBox fx:id="navPanel" styleClass="nav-panel" spacing="5" prefWidth="200">
-            <padding><Insets top="15" right="10" bottom="15" left="10"/></padding>
-            <Label text="Navigation" styleClass="nav-header"/>
-            <Separator/>
-            <!-- Nav buttons added dynamically based on role -->
-            <Button fx:id="navSorties" text="Sorties" onAction="#showSorties"
+        <VBox fx:id="navPanel" styleClass="nav-panel" spacing="2" prefWidth="220">
+            <padding><Insets top="15" right="8" bottom="15" left="8"/></padding>
+            <Label text="NAVIGATION" styleClass="nav-header"/>
+
+            <!-- Admin nav items -->
+            <Button fx:id="navImport" text="Import / Export" onAction="#showXmlImport"
                     styleClass="nav-button" maxWidth="Infinity"/>
-            <Button fx:id="navFlb" text="Flight Log Book" onAction="#showFlb"
+            <Button fx:id="navUsers" text="User Management" onAction="#showUsers"
                     styleClass="nav-button" maxWidth="Infinity"/>
-            <Button fx:id="navUsers" text="Manage Users" onAction="#showUsers"
+            <Button fx:id="navAircraft" text="Aircraft Management" onAction="#showAircraft"
                     styleClass="nav-button" maxWidth="Infinity"/>
-            <Button fx:id="navImport" text="XML Import" onAction="#showXmlImport"
+
+            <!-- User nav items -->
+            <Button fx:id="navFlb" text="Sorties &amp; FLB" onAction="#showSortieFlb"
                     styleClass="nav-button" maxWidth="Infinity"/>
+            <Button fx:id="navWorkOrder" text="Work Orders" onAction="#showWorkOrders"
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            <Button fx:id="navSnag" text="Snag Reporting" onAction="#showSnagReporting"
+                    styleClass="nav-button" maxWidth="Infinity"/>
+            <Button fx:id="navReports" text="Reports" onAction="#showReports"
+                    styleClass="nav-button" maxWidth="Infinity"/>
+
             <Region VBox.vgrow="ALWAYS"/>
+            <Separator styleClass="nav-separator"/>
+            <Label fx:id="activeAircraftNav" styleClass="nav-info" wrapText="true"/>
         </VBox>
     </left>
 
     <!-- Center content -->
     <center>
         <StackPane fx:id="contentArea" styleClass="content-area">
-            <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
-            <Label text="Welcome to EMMS Lite" styleClass="welcome-text"/>
+            <padding><Insets top="0" right="0" bottom="0" left="0"/></padding>
+            <VBox alignment="CENTER" spacing="10">
+                <Label text="Welcome to eMMS Lite" styleClass="welcome-text"/>
+                <Label text="Select a module from the left navigation" styleClass="hint-text"/>
+            </VBox>
         </StackPane>
     </center>
 
-    <!-- Bottom status bar -->
-    <bottom>
-        <HBox styleClass="status-bar" spacing="10" alignment="CENTER_LEFT">
-            <padding><Insets top="5" right="10" bottom="5" left="10"/></padding>
-            <Label fx:id="statusBarLabel" text="Ready"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="versionLabel" text="v1.0.0"/>
-        </HBox>
-    </bottom>
 </BorderPane>

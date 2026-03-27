@@ -2,6 +2,7 @@ package com.aircraft.emms.service;
 
 import com.aircraft.emms.dto.SortieDto;
 import com.aircraft.emms.entity.*;
+import com.aircraft.emms.repository.FlightLogBookRepository;
 import com.aircraft.emms.repository.SortieRepository;
 import com.aircraft.emms.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,39 +18,50 @@ public class SortieService {
 
     private final SortieRepository sortieRepository;
     private final UserRepository userRepository;
+    private final FlightLogBookRepository flbRepository;
     private final AuditService auditService;
+    private final AircraftDataSetService aircraftService;
 
     @Transactional
     public SortieDto createSortie(SortieDto dto, String createdBy) {
-        if (sortieRepository.existsBySortieNumber(dto.getSortieNumber())) {
-            throw new IllegalArgumentException("Sortie number already exists: " + dto.getSortieNumber());
-        }
+        AircraftDataSet dataset = aircraftService.requireActiveDataset();
 
         User creator = userRepository.findByServiceId(createdBy)
                 .orElseThrow(() -> new IllegalArgumentException("Creator not found"));
 
+        // Only CAPTAIN can create sorties
+        if (!creator.hasRole(Role.CAPTAIN)) {
+            throw new IllegalStateException("Only CAPTAIN can create sorties");
+        }
+
+        // Auto-generate sortie number
+        String sortieNumber = generateSortieNumber(dataset);
+
         Sortie sortie = Sortie.builder()
-                .sortieNumber(dto.getSortieNumber())
-                .aircraftType(dto.getAircraftType())
-                .aircraftNumber(dto.getAircraftNumber())
+                .sortieNumber(sortieNumber)
+                .aircraftType(dataset.getAircraftName())
+                .aircraftNumber(dataset.getAssetNum())
                 .scheduledDate(dto.getScheduledDate())
                 .scheduledStart(dto.getScheduledStart())
                 .scheduledEnd(dto.getScheduledEnd())
                 .status(SortieStatus.CREATED)
                 .remarks(dto.getRemarks())
                 .createdBy(creator)
+                .dataset(dataset)
                 .build();
 
-        // Set captain if provided
+        // Validate end time after start time
+        if (sortie.getScheduledStart() != null && sortie.getScheduledEnd() != null
+                && !sortie.getScheduledEnd().isAfter(sortie.getScheduledStart())) {
+            throw new IllegalArgumentException("Scheduled end time must be after start time");
+        }
+
         if (dto.getCaptainId() != null) {
             User captain = userRepository.findById(dto.getCaptainId())
                     .orElseThrow(() -> new IllegalArgumentException("Captain not found"));
             sortie.setCaptain(captain);
-        } else {
-            // If creator is captain, auto-assign
-            if (creator.getRole() == Role.CAPTAIN) {
-                sortie.setCaptain(creator);
-            }
+        } else if (creator.hasRole(Role.CAPTAIN)) {
+            sortie.setCaptain(creator);
         }
 
         sortie = sortieRepository.save(sortie);
@@ -67,8 +79,14 @@ public class SortieService {
         User pilot = userRepository.findById(pilotId)
                 .orElseThrow(() -> new IllegalArgumentException("Pilot not found: " + pilotId));
 
-        if (pilot.getRole() != Role.PILOT) {
+        if (!pilot.hasRole(Role.PILOT)) {
             throw new IllegalArgumentException("User is not a pilot: " + pilot.getServiceId());
+        }
+
+        // Verify pilot belongs to active aircraft dataset
+        AircraftDataSet activeDataset = aircraftService.requireActiveDataset();
+        if (pilot.getDataset() == null || !pilot.getDataset().getId().equals(activeDataset.getId())) {
+            throw new IllegalArgumentException("Pilot does not belong to the active aircraft");
         }
 
         // Check for scheduling clashes
@@ -95,12 +113,34 @@ public class SortieService {
     }
 
     @Transactional
-    public SortieDto updateSortieStatus(Long sortieId, SortieStatus newStatus, String updatedBy) {
+    public SortieDto updateSortieStatus(Long sortieId, SortieStatus newStatus, String updatedBy, String remarks) {
         Sortie sortie = sortieRepository.findById(sortieId)
                 .orElseThrow(() -> new IllegalArgumentException("Sortie not found: " + sortieId));
 
         validateStatusTransition(sortie.getStatus(), newStatus);
+
+        // Rejection requires remarks
+        if (newStatus == SortieStatus.REJECTED) {
+            if (remarks == null || remarks.isBlank()) {
+                throw new IllegalArgumentException("Remarks are mandatory when rejecting a sortie");
+            }
+            sortie.setRemarks(remarks);
+        }
+
+        // Closing a sortie: check all linked FLBs are closed or aborted
+        if (newStatus == SortieStatus.CLOSED) {
+            List<FlightLogBook> flbs = flbRepository.findBySortieId(sortieId);
+            boolean hasUnfinishedFlbs = flbs.stream()
+                    .anyMatch(f -> f.getStatus() != FlbStatus.CLOSED && f.getStatus() != FlbStatus.ABORTED);
+            if (hasUnfinishedFlbs) {
+                throw new IllegalStateException("Cannot close sortie: all linked FLBs must be closed or aborted first");
+            }
+        }
+
         sortie.setStatus(newStatus);
+        if (remarks != null && !remarks.isBlank()) {
+            sortie.setRemarks(remarks);
+        }
         sortie = sortieRepository.save(sortie);
 
         auditService.log(updatedBy, "UPDATE_SORTIE_STATUS", "Sortie", sortie.getId(),
@@ -134,6 +174,11 @@ public class SortieService {
     }
 
     @Transactional(readOnly = true)
+    public List<SortieDto> getSortiesByCaptainOrPilot(Long userId) {
+        return sortieRepository.findByCaptainIdOrPilotId(userId).stream().map(this::toDto).toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<SortieDto> getPendingSortiesForPilot(Long pilotId) {
         return sortieRepository.findByPilotIdAndStatusIn(pilotId,
                 List.of(SortieStatus.ASSIGNED)).stream().map(this::toDto).toList();
@@ -143,10 +188,11 @@ public class SortieService {
         boolean valid = switch (current) {
             case CREATED -> next == SortieStatus.ASSIGNED || next == SortieStatus.CANCELLED;
             case ASSIGNED -> next == SortieStatus.ACCEPTED || next == SortieStatus.REJECTED || next == SortieStatus.CANCELLED;
-            case ACCEPTED -> next == SortieStatus.IN_PROGRESS || next == SortieStatus.CANCELLED;
-            case IN_PROGRESS -> next == SortieStatus.COMPLETED || next == SortieStatus.CANCELLED;
-            case REJECTED -> next == SortieStatus.ASSIGNED || next == SortieStatus.CANCELLED;
-            case COMPLETED, CANCELLED -> false;
+            case ACCEPTED -> next == SortieStatus.IN_PROGRESS || next == SortieStatus.CLOSED || next == SortieStatus.CANCELLED;
+            case IN_PROGRESS -> next == SortieStatus.COMPLETED || next == SortieStatus.CLOSED || next == SortieStatus.CANCELLED;
+            case REJECTED -> next == SortieStatus.CLOSED || next == SortieStatus.CANCELLED;
+            case COMPLETED -> next == SortieStatus.CLOSED;
+            case CLOSED, CANCELLED -> false;
         };
         if (!valid) {
             throw new IllegalStateException(
@@ -166,6 +212,17 @@ public class SortieService {
                         .collect(Collectors.joining(", ")));
             }
         }
+    }
+
+    private String generateSortieNumber(AircraftDataSet dataset) {
+        long count = sortieRepository.countByDatasetId(dataset.getId());
+        String prefix = dataset.getAssetNum() != null ? dataset.getAssetNum() : "S";
+        String number;
+        do {
+            count++;
+            number = prefix + "-" + String.format("%04d", count);
+        } while (sortieRepository.existsBySortieNumber(number));
+        return number;
     }
 
     private SortieDto toDto(Sortie sortie) {

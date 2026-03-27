@@ -1,7 +1,7 @@
 package com.aircraft.emms.controller;
 
 import com.aircraft.emms.dto.ApiResponse;
-import com.aircraft.emms.entity.XmlImportLog;
+import com.aircraft.emms.dto.ImportLogDto;
 import com.aircraft.emms.xmlimport.XmlImportResult;
 import com.aircraft.emms.xmlimport.XmlImportService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class XmlImportController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity<ApiResponse<List<XmlImportLog>>> getImportHistory() {
+    public ResponseEntity<ApiResponse<List<ImportLogDto>>> getImportHistory() {
         return ResponseEntity.ok(ApiResponse.ok(xmlImportService.getImportHistory()));
     }
 }

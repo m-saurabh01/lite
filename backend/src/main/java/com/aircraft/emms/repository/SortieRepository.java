@@ -19,6 +19,9 @@ public interface SortieRepository extends JpaRepository<Sortie, Long> {
 
     boolean existsBySortieNumber(String sortieNumber);
 
+    @Query("SELECT COUNT(s) FROM Sortie s WHERE s.dataset.id = :datasetId")
+    long countByDatasetId(@Param("datasetId") Long datasetId);
+
     List<Sortie> findByScheduledDate(LocalDate date);
 
     List<Sortie> findByStatus(SortieStatus status);
@@ -27,6 +30,9 @@ public interface SortieRepository extends JpaRepository<Sortie, Long> {
 
     List<Sortie> findByPilotId(Long pilotId);
 
+    @Query("SELECT DISTINCT s FROM Sortie s WHERE s.captain.id = :userId OR s.pilot.id = :userId")
+    List<Sortie> findByCaptainIdOrPilotId(@Param("userId") Long userId);
+
     @Query("SELECT s FROM Sortie s WHERE s.pilot.id = :pilotId AND s.status IN :statuses")
     List<Sortie> findByPilotIdAndStatusIn(@Param("pilotId") Long pilotId,
                                            @Param("statuses") List<SortieStatus> statuses);
@@ -34,6 +40,10 @@ public interface SortieRepository extends JpaRepository<Sortie, Long> {
     @Query("SELECT s FROM Sortie s WHERE s.captain.id = :captainId AND s.scheduledDate = :date")
     List<Sortie> findByCaptainIdAndScheduledDate(@Param("captainId") Long captainId,
                                                   @Param("date") LocalDate date);
+
+    List<Sortie> findByDatasetId(Long datasetId);
+
+    void deleteByDatasetId(Long datasetId);
 
     /** Clash detection: find overlapping sorties for the same pilot on the same date */
     @Query("SELECT s FROM Sortie s WHERE s.pilot.id = :pilotId " +

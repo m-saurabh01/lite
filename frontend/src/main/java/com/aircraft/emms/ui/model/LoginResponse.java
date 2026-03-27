@@ -1,10 +1,13 @@
 package com.aircraft.emms.ui.model;
 
+import java.util.List;
+
 public class LoginResponse {
     private String token;
     private String serviceId;
     private String name;
     private Role role;
+    private List<String> roles;
 
     public LoginResponse() {}
 
@@ -16,4 +19,6 @@ public class LoginResponse {
     public void setName(String name) { this.name = name; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+    public List<String> getRoles() { return roles; }
+    public void setRoles(List<String> roles) { this.roles = roles; }
 }

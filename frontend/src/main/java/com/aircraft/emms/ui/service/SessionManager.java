@@ -3,9 +3,11 @@ package com.aircraft.emms.ui.service;
 import com.aircraft.emms.ui.model.LoginResponse;
 import com.aircraft.emms.ui.model.Role;
 
-/**
- * Holds the current user session state. Singleton pattern for desktop app.
- */
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public final class SessionManager {
 
     private static final SessionManager INSTANCE = new SessionManager();
@@ -14,6 +16,7 @@ public final class SessionManager {
     private String serviceId;
     private String name;
     private Role role;
+    private List<String> roles;
     private Long userId;
 
     private SessionManager() {}
@@ -27,6 +30,7 @@ public final class SessionManager {
         this.serviceId = response.getServiceId();
         this.name = response.getName();
         this.role = response.getRole();
+        this.roles = response.getRoles() != null ? response.getRoles() : List.of(response.getRole().name());
     }
 
     public void logout() {
@@ -34,6 +38,7 @@ public final class SessionManager {
         this.serviceId = null;
         this.name = null;
         this.role = null;
+        this.roles = null;
         this.userId = null;
     }
 
@@ -45,10 +50,21 @@ public final class SessionManager {
     public String getServiceId() { return serviceId; }
     public String getName() { return name; }
     public Role getRole() { return role; }
+    public List<String> getRoles() { return roles != null ? roles : Collections.emptyList(); }
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
 
-    public boolean isAdmin() { return role == Role.ADMIN; }
-    public boolean isCaptain() { return role == Role.CAPTAIN; }
-    public boolean isPilot() { return role == Role.PILOT; }
+    public boolean hasRole(String roleName) {
+        return roles != null && roles.contains(roleName);
+    }
+
+    public boolean isAdmin() { return hasRole("ADMIN"); }
+    public boolean isCaptain() { return hasRole("CAPTAIN"); }
+    public boolean isPilot() { return hasRole("PILOT"); }
+    public boolean isTechnician() { return hasRole("TECHNICIAN"); }
+    public boolean isMechanic() { return hasRole("MECHANIC"); }
+
+    public String getRolesDisplay() {
+        return roles != null ? String.join(", ", roles) : "";
+    }
 }

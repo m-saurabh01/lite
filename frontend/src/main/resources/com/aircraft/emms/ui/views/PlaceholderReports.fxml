@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" spacing="20" xmlns:fx="http://javafx.com/fxml"
+      stylesheets="@../css/styles.css" styleClass="placeholder-view">
+
+    <padding><Insets top="60" right="40" bottom="60" left="40"/></padding>
+
+    <Label text="&#x1f4ca;" styleClass="placeholder-icon"/>
+    <Label text="Reports &amp; Analytics" styleClass="section-title"/>
+    <Label text="This module is under development and will be available in a future release."
+           styleClass="hint-text" wrapText="true" maxWidth="400" alignment="CENTER"/>
+    <Label text="Generate flight reports, maintenance summaries, and operational analytics."
+           styleClass="placeholder-desc" wrapText="true" maxWidth="450" alignment="CENTER"/>
+
+</VBox>
