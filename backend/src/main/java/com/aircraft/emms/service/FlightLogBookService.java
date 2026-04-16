@@ -71,6 +71,15 @@ public class FlightLogBookService {
         }
 
         flb = flbRepository.save(flb);
+
+        // Auto-transition: DRAFT -> OPEN when times are filled
+        if (flb.getStatus() == FlbStatus.DRAFT
+                && flb.getActualTakeoffTime() != null
+                && flb.getActualLandingTime() != null) {
+            flb.setStatus(FlbStatus.OPEN);
+            flb = flbRepository.save(flb);
+        }
+
         auditService.log(createdBy, "CREATE_FLB", "FlightLogBook", flb.getId(),
                 "Created FLB for aircraft " + flb.getAircraftNumber());
 

@@ -318,7 +318,10 @@ public class SortieController {
         assignPilotBtn.setDisable(!hasSelection || (selected != null && selected.getStatus() != SortieStatus.CREATED));
         acceptBtn.setDisable(!hasSelection || (selected != null && selected.getStatus() != SortieStatus.ASSIGNED));
         rejectBtn.setDisable(!hasSelection || (selected != null && selected.getStatus() != SortieStatus.ASSIGNED));
-        cancelBtn.setDisable(!hasSelection);
+        cancelBtn.setDisable(!hasSelection || selected == null ||
+                selected.getStatus() == SortieStatus.CLOSED ||
+                selected.getStatus() == SortieStatus.CANCELLED ||
+                selected.getStatus() == SortieStatus.COMPLETED);
         closeBtn.setDisable(!hasSelection || selected == null ||
                 (selected.getStatus() != SortieStatus.ACCEPTED &&
                  selected.getStatus() != SortieStatus.IN_PROGRESS &&

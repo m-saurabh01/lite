@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.oracle.database.jdbc</groupId>
+  <artifactId>ojdbc8</artifactId>
+  <version>19.6.0.0</version>
+  <packaging>jar</packaging>  
+
+  <!-- Start elements that need to be inserted -->
+  <!-- Start of fields requiring product specific values -->
+  <name>ojdbc8</name>
+  <description>Oracle JDBC Driver compatible with JDK8, JDK9, and JDK11</description>
+  <url>https://www.oracle.com/database/technologies/appdev/jdbc.html</url>
+  <inceptionYear>1997</inceptionYear>
+  <!-- End of fields requiring product specific values -->
+
+  <licenses>
+    <license>
+      <name>Oracle Free Use Terms and Conditions (FUTC)</name>
+      <comments>
+         https://www.oracle.com/downloads/licenses/oracle-free-license.html
+      </comments>
+    </license>
+  </licenses>
+  <!-- End elements that need to be inserted -->
+ 
+  <developers>
+    <developer>
+      <organization>Oracle America, Inc.</organization>
+      <organizationUrl>http://www.oracle.com</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <url></url>
+  </scm> 
+   <dependencies>
+
+   <!-- Java Connection Pool (UCP) required to pool database connections --> 
+   <dependency>
+      <groupId>com.oracle.database.jdbc</groupId>
+      <artifactId>ucp</artifactId>    
+      <version>19.6.0.0</version>
+  </dependency>
+
+  <!-- Additional libraries required to support Oracle Wallets and/or 
+  the Notification System  -->  
+  <dependency>
+      <groupId>com.oracle.database.security</groupId>
+      <artifactId>oraclepki</artifactId>    
+      <version>19.6.0.0</version>      
+  </dependency>   
+  <dependency>
+      <groupId>com.oracle.database.security</groupId>
+      <artifactId>osdt_cert</artifactId>     
+      <version>19.6.0.0</version>     
+  </dependency>       
+  <dependency>
+      <groupId>com.oracle.database.security</groupId>
+      <artifactId>osdt_core</artifactId>     
+      <version>19.6.0.0</version>    
+  </dependency>
+
+  <!-- Additional libraries required to support FAN events with UCP and/or
+   the JDBC driver -->  
+  <dependency>
+      <groupId>com.oracle.database.ha</groupId>
+      <artifactId>simplefan</artifactId>     
+      <version>19.6.0.0</version>    
+  </dependency>
+  <dependency>
+      <groupId>com.oracle.database.ha</groupId>
+      <artifactId>ons</artifactId>     
+      <version>19.6.0.0</version>    
+  </dependency>
+
+ <!-- Additional library required to support Internationalization -->
+  <dependency>
+      <groupId>com.oracle.database.nls</groupId>
+      <artifactId>orai18n</artifactId>
+      <version>19.6.0.0</version>
+      <optional>true</optional>
+  </dependency>
+
+  <!-- Additional libraries required to support XMLType -->
+  <dependency>
+      <groupId>com.oracle.database.xml</groupId>
+      <artifactId>xdb</artifactId>
+      <version>19.6.0.0</version>
+      <optional>true</optional>
+  </dependency>
+   <dependency>
+      <groupId>com.oracle.database.xml</groupId>
+      <artifactId>xmlparserv2</artifactId>
+      <version>19.6.0.0</version>
+      <optional>true</optional>
+  </dependency>
+
+</dependencies>
+  
+</project>

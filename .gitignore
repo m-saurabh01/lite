@@ -10,6 +10,7 @@ dist/
 .settings/
 .project
 .classpath
+.factorypath
 *.swp
 *~
 
@@ -25,3 +26,6 @@ uploads/
 
 # Maven
 dependency-reduced-pom.xml
+
+# Offline dependency cache — DO NOT IGNORE
+# lib/maven-repo/ is intentionally committed for offline builds

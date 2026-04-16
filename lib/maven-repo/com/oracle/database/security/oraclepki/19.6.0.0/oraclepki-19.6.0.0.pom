@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.oracle.database.security</groupId>
+  <artifactId>oraclepki</artifactId>
+  <version>19.6.0.0</version>
+  <packaging>jar</packaging>  
+
+  <!-- Start elements that need to be inserted -->
+
+  <!-- Start of fields requiring product specific values -->
+  <name>oraclepki</name>
+  <description>Oracle PKI to access Oracle Wallets from Java </description>
+  <url>https://www.oracle.com/database/technologies/appdev/jdbc.html</url>
+  <inceptionYear>1997</inceptionYear>
+  <!-- End of fields requiring product specific values -->
+
+  <licenses>
+    <license>
+      <name>Oracle Free Use Terms and Conditions (FUTC)</name>
+      <comments> 
+        https://www.oracle.com/downloads/licenses/oracle-free-license.html
+      </comments>
+    </license>
+  </licenses>
+  <!-- End elements that need to be inserted -->
+  
+  <developers>
+    <developer>
+      <organization>Oracle America, Inc.</organization>
+      <organizationUrl>http://www.oracle.com</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <url></url>
+  </scm>
+ 
+</project>

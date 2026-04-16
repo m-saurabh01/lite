@@ -92,6 +92,10 @@
 }
 
 /* --- Buttons --- */
+.button {
+    -fx-cursor: hand;
+}
+
 .btn-primary {
     -fx-background-color: #3182ce;
     -fx-text-fill: white;
@@ -358,7 +362,7 @@
 
 /* --- Tab Pane (Sortie & FLB combined view) --- */
 .module-tabs > .tab-header-area {
-    -fx-padding: 0;
+    -fx-padding: 4 4 0 4;
 }
 .module-tabs > .tab-header-area > .headers-region > .tab {
     -fx-background-color: #edf2f7;
@@ -368,10 +372,14 @@
     -fx-border-radius: 6 6 0 0;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
+    -fx-cursor: hand;
 }
 .module-tabs > .tab-header-area > .headers-region > .tab:focused {
     -fx-background-color: #edf2f7;
     -fx-border-color: #e2e8f0;
+}
+.module-tabs > .tab-header-area > .headers-region > .tab:hover {
+    -fx-background-color: #e2e8f0;
 }
 .module-tabs > .tab-header-area > .headers-region > .tab:selected {
     -fx-background-color: white;
@@ -379,6 +387,9 @@
     -fx-border-width: 2 1 0 1;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
+}
+.module-tabs > .tab-header-area > .headers-region > .tab:selected:hover {
+    -fx-background-color: white;
 }
 .module-tabs > .tab-header-area > .headers-region > .tab:selected:focused {
     -fx-background-color: white;
@@ -565,11 +576,7 @@
 .clash-warning {
     -fx-text-fill: #d69e2e;
     -fx-font-weight: bold;
-    -fx-background-color: #fffff0;
-    -fx-padding: 4 10;
-    -fx-background-radius: 4;
-    -fx-border-color: #f6e05e;
-    -fx-border-radius: 4;
+    -fx-padding: 0;
 }
 
 .computed-value {
