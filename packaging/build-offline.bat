@@ -82,14 +82,18 @@ REM --- Step 3: Stage application files ---
 echo [Step 3] Staging application files...
 if exist build\app rmdir /s /q build\app
 mkdir build\app
+mkdir build\app\config
 mkdir build\app\data
 mkdir build\app\logs
 
-copy backend\target\emms-backend-1.0.0.jar build\app\ >nul
-copy frontend\target\emms-frontend-1.0.0.jar build\app\ >nul
-copy packaging\emms-launcher.bat build\app\ >nul
-copy packaging\update.bat build\app\ >nul
-copy packaging\rollback.bat build\app\ >nul
+REM Copy JARs — rename to unversioned names expected by installer and launcher
+copy /y backend\target\emms-backend-1.0.0.jar build\app\emms-backend.jar >nul
+copy /y frontend\target\emms-frontend-1.0.0.jar build\app\emms-frontend.jar >nul
+copy /y packaging\emms-launcher.bat build\app\ >nul
+copy /y packaging\update.bat build\app\ >nul
+copy /y packaging\rollback.bat build\app\ >nul
+copy /y backend\src\main\resources\application.properties build\app\config\application.properties >nul
+echo 1.0.0> build\app\version.txt
 xcopy /E /I /Q build\runtime build\app\runtime >nul
 echo   Staging: SUCCESS
 echo.
