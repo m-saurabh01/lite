@@ -43,10 +43,7 @@ if exist "%DATA_DIR%\app.db" (
 REM --- Start Backend ---
 echo Starting EMMS backend server...
 set EMMS_DATA_DIR=%DATA_DIR%
-start "" /b "%JAVAW_EXE%" -Xmx512m -jar "%APP_DIR%emms-backend.jar" ^
-    --spring.config.additional-location=file:%CONFIG_DIR%\application.properties ^
-    --app.data-dir=%DATA_DIR% ^
-    > "%LOG_DIR%\backend-start.log" 2>&1
+start "" /b "%JAVAW_EXE%" -Xmx512m -jar "%APP_DIR%emms-backend.jar" --spring.config.additional-location=file:%CONFIG_DIR%\application.properties --app.data-dir=%DATA_DIR% > "%LOG_DIR%\backend-start.log" 2>&1
 
 REM --- Wait for backend to be ready ---
 echo Waiting for backend...
