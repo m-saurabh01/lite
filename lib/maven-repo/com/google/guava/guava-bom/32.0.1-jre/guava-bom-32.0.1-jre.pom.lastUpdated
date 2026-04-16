@@ -1,7 +1,0 @@
-#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Thu Apr 16 08:01:47 IST 2026
-@default-flyway-repo-https\://nexus.flywaydb.org/repository/flyway/.lastUpdated=1776306706855
-https\://maven-central.storage-download.googleapis.com/maven2/.lastUpdated=1776306707192
-https\://nexus.flywaydb.org/repository/flyway/.error=Could not transfer artifact com.google.guava\:guava-bom\:pom\:32.0.1-jre from/to flyway-repo (https\://nexus.flywaydb.org/repository/flyway/)\: nexus.flywaydb.org
-https\://repo.gradle.org/gradle/libs-releases-local/.error=
-https\://repo.gradle.org/gradle/libs-releases-local/.lastUpdated=1776306706851
