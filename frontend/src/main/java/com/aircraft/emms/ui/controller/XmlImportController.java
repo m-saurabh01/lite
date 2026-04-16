@@ -41,8 +41,21 @@ public class XmlImportController {
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("ZIP Files", "*.zip"));
 
-        Stage stage = (Stage) importButton.getScene().getWindow();
-        File file = fileChooser.showOpenDialog(stage);
+        File file = null;
+        // Try with owner Stage first, fallback to null owner on COM error
+        try {
+            javafx.scene.Scene scene = importButton.getScene();
+            Stage stage = (scene != null && scene.getWindow() instanceof Stage s) ? s : null;
+            file = fileChooser.showOpenDialog(stage);
+        } catch (Exception e) {
+            // Fallback: open without owner window (avoids Windows COM pointer errors)
+            try {
+                file = fileChooser.showOpenDialog(null);
+            } catch (Exception ex) {
+                showError("Cannot open file dialog: " + ex.getMessage());
+                return;
+            }
+        }
 
         if (file != null) {
             selectedFile = file;

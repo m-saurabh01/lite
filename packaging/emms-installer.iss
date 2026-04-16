@@ -12,19 +12,22 @@
 #define MyAppVersion "1.0.0"
 #define MyAppPublisher "Aircraft Operations"
 #define MyAppExeName "emms-launcher.bat"
+#define MyAppIcon "resources\app.ico"
 
 [Setup]
 AppId={{B8F2A0E1-3C4D-4E5F-A6B7-C8D9E0F1A2B3}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName=C:\AircraftApp
+DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputDir=..\dist
 OutputBaseFilename=EMMS-Lite-Setup-{#MyAppVersion}
+SetupIconFile={#MyAppIcon}
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+PrivilegesRequired=admin
 ; Do NOT uninstall data directory
 UninstallFilesDir={app}\uninstall
 
@@ -37,6 +40,9 @@ Source: "..\build\app\emms-backend.jar"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\build\app\emms-frontend.jar"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\build\app\emms-launcher.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\build\app\version.txt"; DestDir: "{app}"; Flags: ignoreversion
+
+; Application icon
+Source: "resources\app.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Configuration (only if not exists — preserve existing)
 Source: "..\build\app\config\application.properties"; DestDir: "{app}\config"; Flags: onlyifdoesntexist
@@ -54,8 +60,9 @@ Name: "{app}\logs"; Flags: uninsneveruninstall
 Name: "{app}\backups"; Flags: uninsneveruninstall
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\app.ico"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; IconFilename: "{app}\app.ico"
+Name: "{group}\Uninstall {#MyAppName}"; Filename: "{uninstallexe}"
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: nowait postinstall skipifsilent shellexec

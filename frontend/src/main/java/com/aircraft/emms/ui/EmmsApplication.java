@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class EmmsApplication extends Application {
@@ -25,6 +26,13 @@ public class EmmsApplication extends Application {
         primaryStage.setResizable(true);
         primaryStage.setMinWidth(400);
         primaryStage.setMinHeight(450);
+
+        // Set application icon
+        try {
+            primaryStage.getIcons().add(new Image(
+                    getClass().getResourceAsStream("/com/aircraft/emms/ui/images/app-icon.png")));
+        } catch (Exception ignored) {}
+
         primaryStage.centerOnScreen();
         primaryStage.show();
     }

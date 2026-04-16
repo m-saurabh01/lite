@@ -10,6 +10,8 @@ import javafx.application.Application;
 public class EmmsLauncher {
 
     public static void main(String[] args) {
+        // Fix Windows COM initialization for native dialogs (FileChooser etc.)
+        System.setProperty("glass.accessible.force", "false");
         Application.launch(EmmsApplication.class, args);
     }
 }
